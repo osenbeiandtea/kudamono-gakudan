@@ -1,0 +1,1870 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light dark}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+</head>
+<body>
+<title>果物楽団</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&text=%E6%9E%9C%E7%89%A9%E6%A5%BD%E5%9B%A3&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* Layout: 見出し → 再生バー → 果物トレイ → 2枚の棚(2小節)。棚は上の段ほど高い音。 */
+:root{
+  --bg:#F2F6FA; --surface:#FFFFFF; --ink:#18233C; --muted:#5A6882; --line:#D5DEEA;
+  --cell:#EBF0F7; --cell-down:#E0E8F2;
+  --accent:#D63752; --on-accent:#FFFFFF;
+  --ice-edge:#4C9DEB; --ice-bg:#DCEBFB; --shelf:#8A99B4; --ripe-bg:#F3E6D2; --ripe-edge:#B9803F;
+  --wm:#E5455F; --apple:#6CB33F; --banana:#F2AD1D; --grapes:#8E63D6; --straw:#FF7B54; --lemon:#BFD01F;
+  --font-display:"Dela Gothic One","Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --font-body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1424; --surface:#172036; --ink:#EAF0FB; --muted:#9DABC6; --line:#2B3853;
+    --cell:#202B46; --cell-down:#263353;
+    --accent:#FF5C76; --on-accent:#1A0A10;
+    --ice-edge:#6DB8FF; --ice-bg:#1F3652; --shelf:#5A6B8C; --ripe-bg:#3B3022; --ripe-edge:#E0A869;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1424; --surface:#172036; --ink:#EAF0FB; --muted:#9DABC6; --line:#2B3853;
+  --cell:#202B46; --cell-down:#263353;
+  --accent:#FF5C76; --on-accent:#1A0A10;
+  --ice-edge:#6DB8FF; --ice-bg:#1F3652; --shelf:#5A6B8C; --ripe-bg:#3B3022; --ripe-edge:#E0A869;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body); font-size:16px; line-height:1.5;
+  padding-block:24px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+button{font-family:inherit; touch-action:manipulation; -webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--ink); outline-offset:2px}
+
+.app{max-width:980px; margin:0 auto; display:grid; gap:18px}
+h1{font-family:var(--font-display); font-weight:400; font-size:clamp(36px,8vw,56px); line-height:1.05; margin:0; letter-spacing:.02em}
+.sub{margin:8px 0 0; color:var(--muted); font-size:15px}
+
+/* 再生バー */
+.transport{display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px}
+.btn{
+  font-weight:700; font-size:15px; color:var(--ink); background:var(--surface);
+  border:1.5px solid var(--line); border-radius:999px; padding:0 16px; min-height:44px; cursor:pointer;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.btn:disabled{opacity:.45; cursor:default}
+@media (hover:hover){ .btn:not(:disabled):hover{border-color:var(--ink)} }
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); padding-inline:22px; font-size:16px}
+.btn svg{width:16px; height:16px; fill:currentColor; flex:none}
+.tempo{display:flex; align-items:center; gap:10px; margin-inline:4px; min-width:0}
+.tempo label{font-size:14px; font-weight:700; color:var(--muted)}
+.tempo input{width:140px; max-width:36vw; accent-color:var(--accent)}
+.tempo output{font-size:14px; font-weight:700; min-width:4.6em; font-variant-numeric:tabular-nums}
+
+/* 果物トレイ */
+.tray{display:grid; grid-template-columns:repeat(auto-fit,minmax(80px,1fr)); gap:8px}
+.tool{
+  --fc:var(--ink);
+  color:inherit; background:var(--surface); border:1.5px solid var(--line); border-radius:14px;
+  padding:8px 4px 8px; display:grid; justify-items:center; gap:1px; cursor:pointer; min-width:0;
+}
+.tool .em{font-size:30px; line-height:1.15; display:grid; place-items:center; height:36px}
+.tool b{font-size:13px}
+.tool small{font-size:11px; color:var(--muted); font-weight:500}
+.tool[aria-pressed="true"]{border-color:var(--fc); background:color-mix(in srgb,var(--fc) 15%,var(--surface)); box-shadow:0 0 0 2px var(--fc)}
+.tool svg{width:26px; height:26px}
+.f-wm{--fc:var(--wm)} .f-apple{--fc:var(--apple)} .f-banana{--fc:var(--banana)}
+.f-grapes{--fc:var(--grapes)} .f-straw{--fc:var(--straw)} .f-lemon{--fc:var(--lemon)}
+.tool.t-ice{--fc:var(--ice-edge)}
+.hint{margin:0; min-height:3em; color:var(--muted); font-size:14px}
+
+/* 棚 */
+.shelves{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr)); gap:16px}
+.shelf{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:12px 12px 14px; display:grid; gap:8px}
+.shelf h2{font-size:13px; margin:0; color:var(--muted); letter-spacing:.08em; font-weight:700}
+.board{display:grid; grid-template-columns:24px repeat(8,minmax(0,1fr)); gap:4px; align-items:center}
+.beat{grid-column:span 2; font-size:11px; font-weight:700; color:var(--muted); padding-left:4px; font-variant-numeric:tabular-nums}
+.note{font-size:11px; font-weight:700; color:var(--muted); text-align:center}
+.cell{
+  position:relative; aspect-ratio:1; min-width:0; border:0; border-radius:10px; padding:0; cursor:pointer;
+  background:var(--cell); display:grid; place-items:center; font-size:clamp(17px,5vw,26px); user-select:none; -webkit-user-select:none;
+}
+.cell.down{background:var(--cell-down)}
+.cell>*,.cell::before{grid-area:1/1}
+.cell::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--line)}
+.cell.on::before{display:none}
+.fr{display:block; line-height:1}
+@media (hover:hover){ .cell:not(.on):hover{background:color-mix(in srgb,var(--ink) 12%,var(--cell))} }
+.cell.on{background:color-mix(in srgb,var(--fc) 24%,var(--cell)); box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--fc) 65%,transparent)}
+.cell.now{background:color-mix(in srgb,var(--accent) 24%,var(--cell))}
+.cell.on.now{background:color-mix(in srgb,var(--fc) 32%,var(--cell)); box-shadow:inset 0 0 0 2.5px var(--accent)}
+.cell.ice{background:var(--ice-bg); box-shadow:inset 0 0 0 1.5px var(--ice-edge)}
+.cell.ice.now{box-shadow:inset 0 0 0 2.5px var(--accent)}
+.cell.ice .fr{filter:hue-rotate(150deg) saturate(.7) brightness(1.15) drop-shadow(0 0 3px var(--ice-edge))}
+.cell.ice::after{
+  content:""; position:absolute; top:2px; right:2px; width:11px; height:11px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%236DB8FF' stroke-width='1.4' stroke-linecap='round'%3E%3Cpath d='M6 1v10M1.7 3.5l8.6 5M1.7 8.5l8.6-5'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.ver{font-size:13px; font-weight:900; letter-spacing:.04em; color:var(--muted); border:1.5px solid var(--line); border-radius:999px; padding:2px 9px; vertical-align:middle; margin-left:10px; font-family:var(--font-body)}
+
+/* 曲の保存 */
+.songs{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:14px 14px 16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:18px 28px}
+.songs h2{font-size:13px; margin:0; color:var(--muted); letter-spacing:.08em; font-weight:700}
+.songs .col{display:grid; gap:8px; align-content:start; min-width:0}
+.field{display:flex; gap:8px; min-width:0}
+.field input[type="text"]{flex:1; min-width:0; font:inherit; font-size:15px; color:var(--ink); background:var(--cell); border:1.5px solid var(--line); border-radius:12px; padding:0 12px; min-height:44px}
+.field input[type="text"]::placeholder{color:var(--muted)}
+.songlist{list-style:none; margin:0; padding:0; display:grid; gap:6px}
+.songlist li{display:flex; align-items:center; gap:8px; background:var(--cell); border-radius:12px; padding:4px 4px 4px 12px; min-width:0}
+.songlist li.empty{background:none; padding:2px 0; color:var(--muted); font-size:13px}
+.songlist .nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:700; font-size:15px}
+.songlist .meta{font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+.btn.sm{min-height:38px; padding:0 12px; font-size:14px}
+.btn.danger{border-color:var(--accent); color:var(--accent)}
+textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-monospace,Menlo,Consolas,monospace; color:var(--ink); background:var(--cell); border:1.5px solid var(--line); border-radius:12px; padding:8px 10px; word-break:break-all}
+.note-line{margin:0; font-size:13px; color:var(--muted); min-height:1.4em}
+/* あそびかた切り替え */
+.modes{display:inline-flex; gap:4px; padding:4px; background:var(--cell); border:1.5px solid var(--line); border-radius:999px; justify-self:start}
+.mode{font-weight:700; font-size:15px; color:var(--muted); background:none; border:0; border-radius:999px; padding:0 22px; min-height:40px; cursor:pointer}
+.mode[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:0 0 0 1.5px var(--ink)}
+
+/* 音のバランス */
+.mixer{background:var(--surface); border:1px solid var(--line); border-radius:18px}
+.mixer>summary{list-style:none; cursor:pointer; padding:0 16px; min-height:48px; display:flex; align-items:center; gap:10px; font-weight:700; font-size:14px; color:var(--muted); letter-spacing:.04em; border-radius:18px}
+.mixer>summary::-webkit-details-marker{display:none}
+.mixer>summary::after{content:""; width:8px; height:8px; margin:-4px 4px 0 auto; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg); transition:transform .15s}
+.mixer[open]>summary::after{transform:rotate(-135deg); margin-top:4px}
+.mixbody{padding:4px 16px 16px; display:grid; gap:12px}
+.mixrow{display:grid; grid-template-columns:minmax(84px,auto) minmax(0,1fr) minmax(0,1fr); gap:6px 16px; align-items:center}
+.mname{font-weight:700; font-size:14px; display:flex; align-items:center; gap:6px; min-width:0}
+.mslider{display:grid; gap:2px; min-width:0}
+.mslider span{font-size:12px; color:var(--muted); display:flex; justify-content:space-between; gap:6px; font-weight:700}
+.mslider output{font-variant-numeric:tabular-nums}
+.mslider input{width:100%; min-height:32px; accent-color:var(--accent)}
+.mixfoot{display:grid; gap:8px}
+.mixfoot input[type="text"]{width:100%; min-width:0; font:12px/1.4 ui-monospace,Menlo,Consolas,monospace; color:var(--ink); background:var(--cell); border:1.5px solid var(--line); border-radius:12px; padding:0 10px; min-height:40px}
+@media (max-width:560px){
+  .mixrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .mixrow .mname{grid-column:1/-1}
+}
+
+/* ぶつける遊び場 */
+.arena{display:grid; gap:12px; justify-items:center}
+.arena-wrap{width:100%; max-width:max(240px,min(520px,calc(64vh * .7826)))}
+#stage{display:block; width:100%; aspect-ratio:360/460; background:var(--surface); border:1px solid var(--line); border-radius:18px; touch-action:manipulation; cursor:pointer}
+.arena-bar{width:100%; max-width:520px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+.arena-bar .btn{justify-content:center; padding-inline:6px; min-height:42px}
+.arena-bar .rec{grid-column:1/-1}
+.btn.rec{border-color:var(--accent); color:var(--accent)}
+.btn.rec[aria-pressed="true"]{background:var(--accent); color:var(--on-accent)}
+.rec-dot{width:10px; height:10px; border-radius:50%; background:currentColor; flex:none}
+.recmsg{width:100%; max-width:520px; text-align:center}
+
+/* ぶつけた音の変換(きろく結果) */
+.recpanel{width:100%; max-width:520px; display:grid; gap:10px; background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:12px}
+.recpanel b{font-size:15px}
+.recmini{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.recbar{display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:2px}
+.mc{aspect-ratio:1; min-width:0; border-radius:4px; background:var(--cell); display:grid; place-items:center; font-size:clamp(9px,2.6vw,14px); line-height:1; overflow:hidden}
+.mc.on{background:color-mix(in srgb,var(--fc) 24%,var(--cell))}
+.mc.ice{background:var(--ice-bg); box-shadow:inset 0 0 0 1px var(--ice-edge)}
+.recacts{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.recacts .btn{justify-content:center; padding-inline:8px}
+.tempo input:disabled{opacity:.45}
+.tbtns{display:contents}
+.ls{display:none}
+
+/* ぶつける画面での装置の切り替え */
+.rigpick{width:100%; max-width:520px; display:grid; grid-template-columns:40px minmax(0,1fr) 40px; gap:6px}
+.rigpick .btn{justify-content:center; padding:0; min-height:36px; font-size:12px}
+.rigsel{display:block; min-width:0}
+.rigsel select{width:100%; min-width:0; min-height:36px; font:inherit; font-size:14px; font-weight:700; color:var(--ink); background:var(--cell); border:1.5px solid var(--line); border-radius:10px; padding:0 8px; text-overflow:ellipsis}
+.rigpick.off{opacity:.45; pointer-events:none}
+.vh{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* 設計モード(板とペグを置く) */
+.contents{display:contents}
+.dbar{display:grid; gap:8px}
+.dtools{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+.dtool{justify-content:center; gap:6px; min-height:46px; padding-inline:6px}
+.dtool[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 14%,var(--surface)); border-color:var(--accent); color:var(--accent)}
+.dic{font-size:16px; line-height:1}
+.dcount{text-align:center}
+.dacts{width:100%; max-width:520px}
+.dacts:not([hidden]){display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.dacts .btn{justify-content:center; padding-inline:6px; min-height:42px}
+#dundo{grid-column:1/-1}
+#stage.designing{cursor:crosshair; touch-action:none}
+
+/* 熟成(茶色い見た目) */
+.tool.t-ripe{--fc:var(--ripe-edge)}
+.cell.ripe{background:var(--ripe-bg); box-shadow:inset 0 0 0 1.5px var(--ripe-edge)}
+.cell.ripe.now{box-shadow:inset 0 0 0 2.5px var(--accent)}
+.cell.ripe .fr{filter:sepia(.6) saturate(1.25) brightness(.85)}
+.cell.ripe::after{
+  content:""; position:absolute; top:3px; right:3px; width:11px; height:11px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cg fill='%23B9803F'%3E%3Ccircle cx='3' cy='3.5' r='1.6'/%3E%3Ccircle cx='8.5' cy='5' r='1.6'/%3E%3Ccircle cx='4.5' cy='9' r='1.4'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;
+}
+.mc.ripe{background:var(--ripe-bg); box-shadow:inset 0 0 0 1px var(--ripe-edge)}
+
+/* 遊び場のオプション(リズム補正・風) */
+.arena-opts{width:100%; max-width:520px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+.arena-opts .btn{justify-content:center; padding-inline:6px; min-height:42px}
+.btn.opt[aria-pressed="true"],.btn.opt[data-on="1"]{background:color-mix(in srgb,var(--accent) 14%,var(--surface)); border-color:var(--accent); color:var(--accent)}
+
+/* スマホ幅: 1小節目の棚が最初の画面に入るように、上の部品を詰める */
+@media (max-width:640px){
+  body{padding-block:16px 36px}
+  .app{gap:12px}
+  h1{font-size:clamp(30px,9vw,40px)}
+  .ver{font-size:12px; padding:1px 8px; margin-left:8px}
+  .sub{margin-top:4px; font-size:13px}
+  .modes{padding:3px}
+  .mode{min-height:36px; font-size:14px; padding:0 20px}
+  .transport{display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px 10px}
+  .transport .btn{min-height:40px}
+  .transport .btn.primary{padding-inline:18px}
+  .tempo{margin:0; gap:8px}
+  .tempo input{flex:1; width:auto; max-width:none; min-width:0}
+  .tempo output{min-width:0; white-space:nowrap}
+  .transport.tempo-only .tempo{grid-column:1/-1}
+  .tbtns{grid-column:1/-1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+  .tbtns .btn{justify-content:center; padding-inline:4px; font-size:14px}
+  .tray{grid-template-columns:repeat(9,minmax(0,1fr)); gap:3px}
+  .lf{display:none}
+  .ls{display:inline}
+  .tool{padding:5px 1px 4px; border-radius:12px; gap:0}
+  .tool .em{font-size:24px; height:28px}
+  .tool b{font-size:clamp(9px,2.7vw,10.5px); white-space:nowrap}
+  .tool small{display:none}
+  .tool svg{width:22px; height:22px}
+  .hint{font-size:13px; margin-top:6px}
+  .mixer>summary{min-height:44px}
+}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
+</style>
+
+<main class="app">
+  <header>
+    <h1>果物楽団<span class="ver">v2.5.1</span></h1>
+    <p class="sub">果物を並べて曲にする。ぶつけた音も曲にできる。</p>
+  </header>
+
+  <div class="modes" role="group" aria-label="あそびかた">
+    <button type="button" class="mode" id="mode-shelf" aria-pressed="true">並べる</button>
+    <button type="button" class="mode" id="mode-bounce" aria-pressed="false">ぶつける</button>
+    <button type="button" class="mode" id="mode-design" aria-pressed="false">設計</button>
+  </div>
+
+  <section class="transport" id="transport" aria-label="再生の操作">
+    <button type="button" class="btn primary" id="play"><svg viewBox="0 0 16 16" aria-hidden="true"><path id="playicon" d="M3 1.5v13l11-6.5z"/></svg><span id="playlabel">再生</span></button>
+    <div class="tempo">
+      <label for="tempo">テンポ</label>
+      <input type="range" id="tempo" min="60" max="180" step="1" value="104">
+      <output id="tempoout" for="tempo">104 BPM</output>
+    </div>
+    <div class="tbtns" id="tbtns">
+      <button type="button" class="btn" id="sample">サンプル曲</button>
+      <button type="button" class="btn" id="clear">全部どける</button>
+      <button type="button" class="btn" id="undo" disabled>元に戻す</button>
+    </div>
+  </section>
+
+  <section aria-label="果物トレイ" id="trayset">
+    <div class="tray" id="tray"></div>
+    <p class="hint" id="hint" aria-live="polite"></p>
+  </section>
+
+  <section class="dbar" id="dbar" aria-label="装置の設計" hidden>
+    <div class="dtools" role="group" aria-label="設計の道具">
+      <button type="button" class="btn dtool" data-d="board" aria-pressed="true"><span class="dic" aria-hidden="true">╱</span><span>板</span></button>
+      <button type="button" class="btn dtool" data-d="peg" aria-pressed="false"><span class="dic" aria-hidden="true">●</span><span>ペグ</span></button>
+      <button type="button" class="btn dtool" data-d="erase" aria-pressed="false"><span class="dic" aria-hidden="true">✕</span><span>どける</span></button>
+    </div>
+    <p class="note-line dcount" id="dcount" aria-live="polite"></p>
+    <p class="hint" id="dmsg" aria-live="polite"></p>
+  </section>
+
+  <details class="mixer" id="mixer">
+    <summary>音のバランス</summary>
+    <div class="mixbody" id="mixbody"></div>
+  </details>
+
+  <section class="arena" id="arena" aria-label="ぶつける遊び場" hidden>
+    <div class="rigpick" id="rigpickrow">
+      <button type="button" class="btn" id="rigprev" aria-label="ひとつ前の装置">◀</button>
+      <label class="rigsel"><span class="vh">装置を選ぶ</span><select id="rigpick" aria-label="装置を選ぶ"></select></label>
+      <button type="button" class="btn" id="rignext" aria-label="つぎの装置">▶</button>
+    </div>
+    <div class="arena-wrap">
+      <canvas id="stage" width="720" height="920" role="img" aria-label="果物が落ちて転がる遊び場。タップした場所から果物が落ちます。"></canvas>
+    </div>
+    <div class="contents" id="playctl">
+    <div class="arena-bar">
+      <button type="button" class="btn rec" id="rec" aria-pressed="false"><span class="rec-dot" aria-hidden="true"></span><span id="reclabel">2小節きろく</span></button>
+      <button type="button" class="btn" id="drop">落とす</button>
+      <button type="button" class="btn" id="shake">ゆらす</button>
+      <button type="button" class="btn" id="sweep" aria-label="果物だけリセット(板とペグはそのまま)"><span class="lf">果物だけリセット</span><span class="ls">果物リセット</span></button>
+    </div>
+    <div class="arena-opts">
+      <button type="button" class="btn opt" id="qbtn" aria-pressed="false">リズム補正 OFF</button>
+      <button type="button" class="btn opt" id="windbtn" data-on="0" aria-label="風の強さ: なし(おすと切りかえ)">風: なし</button>
+    </div>
+    <p class="note-line recmsg" id="optmsg" aria-live="polite">リズム補正は、音を8分音符のタイミングにそろえます。風は、果物の動きを変えます。</p>
+    <p class="note-line recmsg" id="recmsg" aria-live="polite"></p>
+    <div class="recpanel" id="recpanel" hidden>
+      <b id="recsum"></b>
+      <div class="recmini" id="recmini" role="img" aria-label="記録した音の並び"></div>
+      <div class="recacts">
+        <button type="button" class="btn primary" id="recreplace">棚におきかえる</button>
+        <button type="button" class="btn" id="recadd">棚に足す</button>
+      </div>
+      <p class="note-line" id="recnote">「棚に足す」は、いまの棚の空いているマスだけに入れます。どちらも「元に戻す」で戻せます。</p>
+    </div>
+    </div>
+    <div class="dacts" id="dacts" hidden>
+      <button type="button" class="btn" id="dreset" aria-label="はじめの配置にもどす">はじめにもどす</button>
+      <button type="button" class="btn" id="dclear">ぜんぶどける</button>
+      <button type="button" class="btn" id="dundo" disabled>元に戻す</button>
+    </div>
+  </section>
+
+  <section class="songs" id="rigs" aria-label="装置の保存" hidden>
+    <div class="col">
+      <h2>保存した装置</h2>
+      <div class="field">
+        <input type="text" id="rigname" maxlength="20" placeholder="装置の名前(例: 階段ころころ)" aria-label="装置の名前">
+        <button type="button" class="btn" id="saverig">保存</button>
+      </div>
+      <ul class="songlist" id="riglist"></ul>
+      <p class="note-line" id="rigmsg" aria-live="polite"></p>
+    </div>
+    <div class="col">
+      <h2>装置コード</h2>
+      <textarea class="code" id="rigout" readonly rows="3" aria-label="いまの装置のコード"></textarea>
+      <p class="note-line">いまの板とペグの配置を文字にしたものです。曲コードとは別ものなので、曲は変わりません。</p>
+      <div class="field"><button type="button" class="btn sm" id="copyrig">コピー</button></div>
+      <div class="field">
+        <input type="text" id="rigin" placeholder="もらった装置コードを貼り付け" aria-label="装置コードの貼り付け">
+        <button type="button" class="btn" id="loadrig">読み込む</button>
+      </div>
+      <p class="note-line" id="rigcodemsg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="shelves" id="shelves" aria-label="果物の棚"></section>
+
+  <section class="songs" id="songs" aria-label="曲の保存">
+    <div class="col">
+      <h2>保存した曲</h2>
+      <div class="field">
+        <input type="text" id="songname" maxlength="20" placeholder="曲の名前(例: 森の朝)" aria-label="曲の名前">
+        <button type="button" class="btn" id="savesong">保存</button>
+      </div>
+      <ul class="songlist" id="songlist"></ul>
+      <p class="note-line" id="songmsg" aria-live="polite"></p>
+    </div>
+    <div class="col">
+      <h2>曲コード</h2>
+      <textarea class="code" id="codeout" readonly rows="3" aria-label="いまの曲のコード"></textarea>
+      <p class="note-line">いまの曲を文字にしたものです。控えておいたり、友だちに送って読み込んでもらえます。</p>
+      <div class="field"><button type="button" class="btn sm" id="copycode">コピー</button></div>
+      <div class="field">
+        <input type="text" id="codein" placeholder="もらった曲コードを貼り付け" aria-label="曲コードの貼り付け">
+        <button type="button" class="btn" id="loadcode">読み込む</button>
+      </div>
+      <p class="note-line" id="codemsg" aria-live="polite"></p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ---------- データ ---------- */
+  const FR = {
+    wm:    {name:'スイカ',  em:'🍉', sub:'ボンゴ',     base:48, trim:1.00, tip:'スイカ: ポコンと響く低いボンゴ。リズムの土台に。'},
+    apple: {name:'りんご',  em:'🍎', sub:'ユーフォ',   base:36, trim:0.80, tip:'りんご: まろやかなユーフォニアム。低くてやわらかい音。'},
+    banana:{name:'バナナ',  em:'🍌', sub:'フルート', base:60, trim:0.70, tip:'バナナ: やわらかいフルート。メロディー向き。'},
+    grapes:{name:'ぶどう',  em:'🍇', sub:'マリンバ', base:60, trim:0.75, tip:'ぶどう: 小さな粒がポロロンと転がるマリンバ。'},
+    straw: {name:'いちご',  em:'🍓', sub:'ピチカート',base:72, trim:0.65, tip:'いちご: ピッと弾けるピチカート。'},
+    lemon: {name:'レモン',  em:'🍋', sub:'鈴',       base:84, trim:0.55, tip:'レモン: ぶつかるとチリンと鳴る高い鈴。'},
+  };
+  const ORDER = ['wm','apple','banana','grapes','straw','lemon'];
+  const SCALE = [0,2,4,7,9];              // ドレミソラ(ペンタトニック)
+  const NOTE = ['ラ','ソ','ミ','レ','ド'];   // 上の段から
+  const STEPS = 16, ROWS = 5;
+  const KEY = 'kudamono-gakudan-v1';
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const DEMO = [
+    ['wm',    [[0,4],[4,3],[8,0],[12,2]]],
+    ['apple', [[2,3],[6,3],[10,3],[14,2]]],
+    ['banana',[[0,2],[2,1],[3,0],[4,1],[6,2],[8,2],[10,1],[11,0],[12,1],[14,3]]],
+    ['grapes',[[1,4],[5,3],[9,4],[13,3]]],
+    ['straw', [[5,0],[9,1],[13,0,1]]],
+    ['lemon', [[7,0],[11,2,1],[15,1]]],
+  ];
+
+  const emptyGrid = () => Array.from({length:STEPS}, () => Array(ROWS).fill(null));
+  function demoGrid(){
+    const g = emptyGrid();
+    DEMO.forEach(([f, cells]) => cells.forEach(([s,r,ice]) => { g[s][r] = {f, ice: !!ice}; }));
+    return g;
+  }
+  let grid = demoGrid();
+  let bpm = 104;
+  let tool = 'banana';
+  let lastFruit = 'banana';
+  let mode = 'shelf';
+  let snap = null;
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved && Array.isArray(saved.g) && saved.g.length === STEPS &&
+        saved.g.every(col => Array.isArray(col) && col.length === ROWS &&
+          col.every(c => c === null || (c && FR[c.f] && typeof c.ice === 'boolean' && (c.ripe === undefined || typeof c.ripe === 'boolean'))))) {
+      grid = saved.g;
+      if (saved.b >= 60 && saved.b <= 180) bpm = saved.b;
+    }
+  } catch (e) {}
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify({g:grid, b:bpm})); } catch (e) {} updateCode(); }
+
+  /* 音のバランス(果物ごとの音量%と音色dB、全体の音量%) */
+  const MIX_KEY = 'kudamono-gakudan-mix-v1';
+  const mix = {all:100, v:{}, t:{}};
+  ORDER.forEach(id => { mix.v[id] = 100; mix.t[id] = 0; });
+  try {
+    const m = JSON.parse(localStorage.getItem(MIX_KEY) || 'null');
+    const num = (x, lo, hi, d) => (typeof x === 'number' && x >= lo && x <= hi) ? x : d;
+    if (m) {
+      mix.all = num(m.all, 0, 150, 100);
+      ORDER.forEach(id => {
+        mix.v[id] = num(m.v && m.v[id], 0, 200, 100);
+        mix.t[id] = num(m.t && m.t[id], -12, 12, 0);
+      });
+    }
+  } catch (e) {}
+  function saveMix(){ try { localStorage.setItem(MIX_KEY, JSON.stringify(mix)); } catch (e) {} }
+
+  /* ---------- 画面の組み立て ---------- */
+  const $ = (id) => document.getElementById(id);
+  const trayEl = $('tray'), hintEl = $('hint'), shelvesEl = $('shelves');
+  const ICE_SVG = '<svg viewBox="0 0 12 12" fill="none" stroke="#4C9DEB" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><path d="M6 1v10M1.7 3.5l8.6 5M1.7 8.5l8.6-5"/></svg>';
+  const ERASE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const RIPE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#B9803F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12.5" r="8"/><circle cx="9" cy="10.5" r="1.3" fill="#B9803F" stroke="none"/><circle cx="14.5" cy="13.5" r="1.3" fill="#B9803F" stroke="none"/><circle cx="10.5" cy="16.5" r="1.1" fill="#B9803F" stroke="none"/></svg>';
+  const TIPS = {
+    ice: '凍らせる: 置いた果物をタップすると凍って、1オクターブ高い硬い音になります。もう一度タップで戻ります。',
+    ripe: '熟成: 置いた果物をタップすると熟して、1オクターブ下のまるい音になります。りんごは低くなりすぎるので、高さはそのままで音色だけまるくなります。もう一度タップで戻ります。',
+    erase: 'どける: 果物をタップして棚から外します。',
+  };
+  const TIPS_N = {
+    ice: '凍らせる: 置いた果物をタップで凍る(1オクターブ上の硬い音)。もう一度で戻る。',
+    ripe: '熟成: 置いた果物をタップで熟す(1オクターブ下のまるい音)。もう一度で戻る。',
+  };
+
+  trayEl.innerHTML = ORDER.map(id =>
+    `<button type="button" class="tool f-${id}" data-id="${id}" aria-pressed="false"><span class="em">${FR[id].em}</span><b>${FR[id].name}</b><small>${FR[id].sub}</small></button>`
+  ).join('') +
+    `<button type="button" class="tool t-ice" data-id="ice" aria-pressed="false"><span class="em">${ICE_SVG}</span><b><span class="lf">凍らせる</span><span class="ls">凍結</span></b><small>1オクターブ上</small></button>` +
+    `<button type="button" class="tool t-ripe" data-id="ripe" aria-pressed="false"><span class="em">${RIPE_SVG}</span><b><span class="lf">熟成させる</span><span class="ls">熟成</span></b><small>1オクターブ下</small></button>` +
+    `<button type="button" class="tool" data-id="erase" aria-pressed="false"><span class="em">${ERASE_SVG}</span><b>どける</b><small>棚から外す</small></button>`;
+
+  const cellsEl = Array.from({length:STEPS}, () => Array(ROWS));
+  for (let b = 0; b < 2; b++) {
+    const sec = document.createElement('section');
+    sec.className = 'shelf';
+    sec.setAttribute('aria-label', `${b+1}小節目の棚`);
+    let html = `<h2>${b+1}小節目</h2><div class="board"><span></span>` +
+      [1,2,3,4].map(n => `<span class="beat">${n}</span>`).join('');
+    for (let r = 0; r < ROWS; r++) {
+      html += `<span class="note" aria-hidden="true">${NOTE[r]}</span>`;
+      for (let c = 0; c < 8; c++) {
+        const s = b*8 + c;
+        html += `<button type="button" class="cell${s%2===0?' down':''}" data-s="${s}" data-r="${r}"><span class="fr"></span></button>`;
+      }
+    }
+    html += '</div>';
+    sec.innerHTML = html;
+    shelvesEl.appendChild(sec);
+  }
+  shelvesEl.querySelectorAll('.cell').forEach(el => { cellsEl[+el.dataset.s][+el.dataset.r] = el; });
+
+  function paintCell(s, r){
+    const c = grid[s][r], el = cellsEl[s][r];
+    const bar = Math.floor(s/8) + 1, beat = Math.floor((s%8)/2) + 1, back = s%2 ? 'の裏' : '';
+    el.classList.toggle('on', !!c);
+    el.classList.toggle('ice', !!(c && c.ice));
+    el.classList.toggle('ripe', !!(c && c.ripe));
+    ORDER.forEach(id => el.classList.toggle('f-'+id, !!(c && c.f === id)));
+    el.firstElementChild.textContent = c ? FR[c.f].em : '';
+    el.setAttribute('aria-label', `${bar}小節目 ${beat}拍${back} ${NOTE[r]}、` + (c ? `${FR[c.f].name}${c.ice ? '(凍っている)' : c.ripe ? '(熟している)' : ''}` : '空き'));
+  }
+  function paintAll(){ for (let s = 0; s < STEPS; s++) for (let r = 0; r < ROWS; r++) paintCell(s, r); }
+
+  /* ---------- 音 ---------- */
+  let ctx = null, bus = null, mainBus = null, master = null, noiseBuf = null;
+  const fbus = {}, rbus = {};
+  function initAudio(){
+    if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return true; }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = 0.85 * mix.all / 100;
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = 0.004; comp.release.value = 0.22;
+    master.connect(comp); comp.connect(ctx.destination);
+    mainBus = ctx.createGain(); mainBus.connect(master);
+    const conv = ctx.createConvolver();
+    const len = Math.floor(ctx.sampleRate * 1.3);
+    const ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = ir.getChannelData(ch);
+      for (let i = 0; i < len; i++) d[i] = (Math.random()*2 - 1) * Math.pow(1 - i/len, 2.8);
+    }
+    conv.buffer = ir;
+    const wet = ctx.createGain(); wet.gain.value = 0.2;
+    mainBus.connect(conv); conv.connect(wet); wet.connect(master);
+    // 果物ごとの音量と音色(高音の明るさ)の通り道
+    ORDER.forEach(id => {
+      const g = ctx.createGain();
+      const sh = ctx.createBiquadFilter(); sh.type = 'highshelf'; sh.frequency.value = 2500;
+      g.connect(sh); sh.connect(mainBus);
+      fbus[id] = {g, sh};
+      // 熟した果物は、この通り道で高い音をまるく丸めてから合流する
+      const rl = ctx.createBiquadFilter(); rl.type = 'lowpass'; rl.frequency.value = 1700; rl.Q.value = 0.5;
+      rl.connect(g); rbus[id] = rl;
+    });
+    bus = mainBus;
+    applyMix(true);
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const nd = noiseBuf.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random()*2 - 1;
+    return true;
+  }
+  const stepDur = () => mode === 'bounce' ? 0.29 : 60 / bpm / 2;
+
+  function applyMix(now){
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    const set = (p, v) => { if (now) p.value = v; else p.setTargetAtTime(v, t, 0.02); };
+    set(master.gain, 0.85 * mix.all / 100);
+    ORDER.forEach(id => { set(fbus[id].g.gain, mix.v[id] / 100); set(fbus[id].sh.gain, mix.t[id]); });
+  }
+  // 果物ごとの通り道に音を流す(音の関数はその場で配線するので、busを差し替えれば足りる)
+  function voice(fid, t, f, v, ice, ripe){
+    bus = ripe ? rbus[fid] : fbus[fid].g;
+    VOICE[fid](t, f, v, ice);
+  }
+
+  function envG(t, peak, att, dec){
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(Math.max(peak, 0.0002), t + att);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + att + dec);
+    return g;
+  }
+  function tone(type, freq, t, peak, att, dec){
+    const o = ctx.createOscillator(); o.type = type; o.frequency.setValueAtTime(freq, t);
+    const g = envG(t, peak, att, dec);
+    o.connect(g); g.connect(bus);
+    o.start(t); o.stop(t + att + dec + 0.05);
+    return {o, g};
+  }
+  function noiseBurst(t, dur, type, freq, gain, q){
+    const src = ctx.createBufferSource(); src.buffer = noiseBuf;
+    const bf = ctx.createBiquadFilter(); bf.type = type; bf.frequency.value = freq; bf.Q.value = q || 1;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(bf); bf.connect(g); g.connect(bus);
+    src.start(t, Math.random()*0.5); src.stop(t + dur + 0.02);
+  }
+
+  // スイカ: 低いボンゴ(凍ると高いボンゴ)
+  function vWm(t, f, v, ice){
+    const k = ice ? 0.6 : 1;
+    const {o} = tone('sine', f*1.4, t, 0.95*v, 0.002, 0.24*k);
+    o.frequency.exponentialRampToValueAtTime(f, t + 0.035);
+    tone('sine', f*1.59, t, 0.3*v, 0.002, 0.1*k);    // 膜の倍音
+    tone('sine', f*2.14, t, 0.12*v, 0.002, 0.06*k);
+    tone('sine', f*0.5, t, 0.2*v, 0.002, 0.1);       // 胴の鳴り
+    noiseBurst(t, 0.035, 'bandpass', ice ? 3200 : 1800, 0.55*v, 1.4);  // 手のひらのスラップ
+    noiseBurst(t, 0.012, 'highpass', 5000, 0.15*v);
+  }
+  // りんご: ユーフォニアム(凍るとミュートをつけたような明るい音)
+  function vApple(t, f, v, ice){
+    const dur = Math.min(stepDur() * (ice ? 1.0 : 1.7), 0.7);
+    const att = ice ? 0.02 : 0.055;
+    const peak = 0.55*v;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(peak, t + att);
+    g.gain.setValueAtTime(peak*0.85, t + dur);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.12);
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 0.9;
+    const c0 = Math.max(f*(ice ? 6 : 2.2), ice ? 900 : 380);
+    const c1 = Math.max(f*(ice ? 9 : 5.5), ice ? 1500 : 650);
+    const c2 = Math.max(f*(ice ? 4 : 3), ice ? 900 : 450);
+    lp.frequency.setValueAtTime(c0, t);
+    lp.frequency.linearRampToValueAtTime(c1, t + att + 0.04);
+    lp.frequency.exponentialRampToValueAtTime(c2, t + dur);
+    lp.connect(g); g.connect(bus);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 5;
+    const lg = ctx.createGain();
+    lg.gain.setValueAtTime(0, t); lg.gain.linearRampToValueAtTime(f*0.005, t + 0.25);
+    lfo.connect(lg);
+    [['sawtooth',-6,0.5],['sawtooth',6,0.5],['triangle',0,0.7]].forEach(([type, cents, a]) => {
+      const o = ctx.createOscillator(); o.type = type; o.frequency.value = f; o.detune.value = cents;
+      lg.connect(o.frequency);
+      const og = ctx.createGain(); og.gain.value = a; o.connect(og); og.connect(lp);
+      o.start(t); o.stop(t + dur + 0.2);
+    });
+    lfo.start(t); lfo.stop(t + dur + 0.2);
+    noiseBurst(t, 0.03, 'bandpass', f*3, 0.1*v);     // 唇の息のはじまり
+  }
+  // バナナ: フルート
+  function vBanana(t, f, v, ice){
+    const dur = Math.min(stepDur() * (ice ? 1.1 : 1.8), 0.75);
+    const peak = 0.5*v;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(peak, t + (ice ? 0.025 : 0.055));
+    g.gain.setValueAtTime(peak*0.9, t + dur);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.14);
+    g.connect(bus);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 5.2;
+    const lg = ctx.createGain(); lg.gain.value = f*0.0045; lfo.connect(lg);
+    [[1,1],[2,0.2],[3,0.07]].forEach(([r,a]) => {
+      const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f*r;
+      lg.connect(o.frequency);
+      const og = ctx.createGain(); og.gain.value = a; o.connect(og); og.connect(g);
+      o.start(t); o.stop(t + dur + 0.2);
+    });
+    lfo.start(t); lfo.stop(t + dur + 0.2);
+    const ns = ctx.createBufferSource(); ns.buffer = noiseBuf; ns.loop = true;
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f*2.2; bp.Q.value = 2;
+    const ng = ctx.createGain(); ng.gain.value = ice ? 0.22 : 0.1;
+    ns.connect(bp); bp.connect(ng); ng.connect(g);
+    ns.start(t); ns.stop(t + dur + 0.2);
+    if (ice) tone('sine', f*4, t, 0.07*v, 0.004, 0.25);
+  }
+  // ぶどう: 粒がポロロン
+  function marimba(t, f, v, ice){
+    tone('sine', f, t, 0.7*v, 0.002, ice ? 0.28 : 0.55);
+    tone('sine', f*4, t, 0.2*v, 0.002, 0.09);
+    if (ice) tone('sine', f*6.3, t, 0.1*v, 0.002, 0.2);
+    noiseBurst(t, 0.01, 'bandpass', f*4, 0.15*v);
+  }
+  function vGrapes(t, f, v, ice){
+    [0, 0.04, 0.082].forEach((dt, i) => {
+      const cents = i ? (Math.random()*36 - 18) : 0;
+      marimba(t + dt, f*Math.pow(2, cents/1200), v*(1 - i*0.28), ice);
+    });
+  }
+  // いちご: ピッ
+  function vStraw(t, f, v, ice){
+    const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 2;
+    lp.frequency.setValueAtTime(f*(ice ? 10 : 7), t);
+    lp.frequency.exponentialRampToValueAtTime(f*1.4, t + 0.18);
+    const dec = ice ? 0.22 : 0.38;
+    const g = envG(t, 0.7*v, 0.002, dec);
+    o.connect(lp); lp.connect(g); g.connect(bus);
+    o.start(t); o.stop(t + dec + 0.06);
+    tone('sine', f*2, t, 0.18*v, 0.002, 0.12);
+    if (ice) tone('sine', f*5.04, t, 0.1*v, 0.002, 0.2);
+  }
+  // レモン: チリン
+  function vLemon(t, f, v, ice){
+    const k = ice ? 0.7 : 1;
+    [[1,1,1.7],[2.76,0.5,1.1],[5.4,0.24,0.65],[8.93,0.12,0.4]].forEach(([r,a,d], i) => {
+      const fr = f*r; if (fr > 16000) return;
+      tone('sine', fr, t, a*0.5*v*(ice && i > 0 ? 1.5 : 1), 0.002, d*k);
+    });
+    noiseBurst(t, 0.015, 'highpass', ice ? 6000 : 4000, 0.12*v);
+  }
+  const VOICE = {wm:vWm, apple:vApple, banana:vBanana, grapes:vGrapes, straw:vStraw, lemon:vLemon};
+
+  // 熟成は1オクターブ下。ただし低すぎて小さなスピーカーでは聞こえない音(C2より下)になるときは、高さを変えない
+  const ripeMidi = (m) => (m - 12 >= 36 ? m - 12 : m);
+  function playNote(c, r, t, v){
+    let m = FR[c.f].base + SCALE[4 - r] + (c.ice ? 12 : 0);
+    if (c.ripe) m = ripeMidi(m);
+    const f = 440 * Math.pow(2, (m - 69)/12);
+    voice(c.f, t, f, v * FR[c.f].trim * (c.ice ? 0.85 : c.ripe ? 0.95 : 1), c.ice, !!c.ripe);
+  }
+
+  /* ---------- 動き ---------- */
+  function plop(el){
+    if (reduce || !el || !el.animate) return;
+    el.animate([
+      {transform:'translateY(-55%) scale(1,1)', opacity:0.5},
+      {transform:'translateY(0) scale(1.3,0.7)', opacity:1, offset:0.45},
+      {transform:'translateY(-14%) scale(0.92,1.1)', offset:0.7},
+      {transform:'none'},
+    ], {duration:280, easing:'ease-out'});
+  }
+
+  /* ---------- 再生 ---------- */
+  let playing = false, nextStep = 0, nextTime = 0, timer = null, queue = [], curStep = -1;
+  const playBtn = $('play'), playLabel = $('playlabel'), playIcon = $('playicon');
+
+  function playStepAudio(step, time){
+    for (let r = 0; r < ROWS; r++) {
+      const c = grid[step][r];
+      if (c) playNote(c, r, time, step % 4 === 0 ? 1 : 0.8);
+    }
+  }
+  function schedule(){
+    while (nextTime < ctx.currentTime + 0.15) {
+      playStepAudio(nextStep, nextTime);
+      queue.push({step:nextStep, time:nextTime});
+      nextTime += stepDur();
+      nextStep = (nextStep + 1) % STEPS;
+    }
+  }
+  function showStep(s){
+    if (curStep >= 0) for (let r = 0; r < ROWS; r++) cellsEl[curStep][r].classList.remove('now');
+    curStep = s;
+    if (s < 0) return;
+    for (let r = 0; r < ROWS; r++) {
+      const el = cellsEl[s][r];
+      el.classList.add('now');
+      if (grid[s][r]) plop(el.firstElementChild);
+    }
+  }
+  function frame(){
+    if (!playing) return;
+    const now = ctx.currentTime;
+    while (queue.length && queue[0].time <= now) showStep(queue.shift().step);
+    requestAnimationFrame(frame);
+  }
+  function setPlayUI(on){
+    playLabel.textContent = on ? '停止' : '再生';
+    playIcon.setAttribute('d', on ? 'M2.5 2.5h11v11h-11z' : 'M3 1.5v13l11-6.5z');
+  }
+  function start(){
+    if (!initAudio()) { setHint('このブラウザでは音を鳴らせません。', true); return; }
+    playing = true; nextStep = 0; nextTime = ctx.currentTime + 0.06; queue = [];
+    timer = setInterval(schedule, 25);
+    setPlayUI(true);
+    requestAnimationFrame(frame);
+  }
+  function stop(){
+    playing = false; clearInterval(timer); queue = [];
+    showStep(-1);
+    setPlayUI(false);
+  }
+  playBtn.addEventListener('click', () => { playing ? stop() : start(); });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) return;
+    if (playing) stop();
+    if (rec) recCancel('画面が見えなくなったので、きろくをやめました。');
+  });
+  document.addEventListener('keydown', (e) => {
+    if (mode === 'shelf' && e.code === 'Space' && !e.target.closest('button,input,textarea,summary')) { e.preventDefault(); playing ? stop() : start(); }
+  });
+
+  /* ---------- 操作 ---------- */
+  let hintTimer = null;
+  const BTIPS = {
+    ice: ['凍らせる: 落ちている果物をタップすると凍って、1オクターブ高い音になります。凍った果物は約20秒かけて少しずつ溶けて、音が下がっていきます。',
+          '凍らせる: 落ちている果物をタップ。約20秒かけて溶けて、音が下がるよ。'],
+    ripe: ['熟成: 落ちている果物をタップすると、約6秒かけて茶色く熟して、1オクターブ下のまるい音になります。もう一度タップで戻ります。',
+           '熟成: 果物をタップ。約6秒で熟して、低くまるい音になるよ。'],
+    erase: ['どける: 遊び場の果物をタップして消します。', 'どける: 遊び場の果物をタップして消します。'],
+  };
+  // スマホ幅ではヒントを2行以内に収める(レイアウトが跳ねないように)
+  const isNarrow = () => !!(window.matchMedia && matchMedia('(max-width:640px)').matches);
+  function toolTip(){
+    const n = isNarrow();
+    if (mode === 'bounce') {
+      if (!FR[tool]) return BTIPS[tool][n ? 1 : 0];
+      return FR[tool].tip + (n ? ' タップで落下。触ると跳ねる。' : ' 遊び場をタップすると、その場所から落ちてきます。落ちている果物をタップすると、ぽんと跳ねます。');
+    }
+    if (!FR[tool]) return (n && TIPS_N[tool]) || TIPS[tool];
+    return FR[tool].tip + (n ? ' 棚をタップで置けるよ。' : ' 棚の好きな場所をタップして置こう。');
+  }
+  function setHint(msg, flash){
+    hintEl.textContent = msg;
+    clearTimeout(hintTimer);
+    if (flash) hintTimer = setTimeout(() => { hintEl.textContent = toolTip(); }, 2600);
+  }
+  function setTool(id){
+    tool = id;
+    if (FR[id]) lastFruit = id;
+    trayEl.querySelectorAll('.tool').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.id === id)));
+    setHint(toolTip());
+  }
+  trayEl.addEventListener('click', (e) => {
+    const b = e.target.closest('.tool'); if (!b) return;
+    setTool(b.dataset.id);
+    if (FR[b.dataset.id] && initAudio()) {
+      playNote({f:b.dataset.id, ice:false}, 2, ctx.currentTime + 0.01, 0.9);
+      plop(b.querySelector('.em'));
+    }
+  });
+
+  const undoBtn = $('undo');
+  function takeSnap(){ snap = JSON.stringify(grid); undoBtn.disabled = false; }
+
+  shelvesEl.addEventListener('click', (e) => {
+    const el = e.target.closest('.cell'); if (!el) return;
+    const s = +el.dataset.s, r = +el.dataset.r;
+    const ok = initAudio();
+    const c = grid[s][r];
+    if (tool === 'erase') {
+      if (c) { grid[s][r] = null; paintCell(s, r); save(); }
+      return;
+    }
+    if (tool === 'ice') {
+      if (!c) { setHint('凍らせるには、先に果物を置いてね。', true); return; }
+      c.ice = !c.ice; if (c.ice) c.ripe = false;
+      paintCell(s, r); save();
+      if (ok) playNote(c, r, ctx.currentTime + 0.01, 0.9);
+      plop(el.firstElementChild);
+      return;
+    }
+    if (tool === 'ripe') {
+      if (!c) { setHint('熟成させるには、先に果物を置いてね。', true); return; }
+      c.ripe = !c.ripe; if (c.ripe) c.ice = false;
+      paintCell(s, r); save();
+      if (ok) playNote(c, r, ctx.currentTime + 0.01, 0.9);
+      plop(el.firstElementChild);
+      return;
+    }
+    if (c && c.f === tool) { grid[s][r] = null; paintCell(s, r); save(); return; }
+    grid[s][r] = {f:tool, ice:false, ripe:false};
+    paintCell(s, r); save();
+    if (ok) playNote(grid[s][r], r, ctx.currentTime + 0.01, 0.9);
+    plop(el.firstElementChild);
+  });
+
+  const tempo = $('tempo'), tempoOut = $('tempoout');
+  tempo.value = bpm; tempoOut.textContent = bpm + ' BPM';
+  tempo.addEventListener('input', () => { bpm = +tempo.value; tempoOut.textContent = bpm + ' BPM'; save(); updateRecHint(); });
+
+  $('sample').addEventListener('click', () => { takeSnap(); grid = demoGrid(); paintAll(); save(); setHint('サンプル曲を並べました。再生してみよう。', true); });
+  $('clear').addEventListener('click', () => { takeSnap(); grid = emptyGrid(); paintAll(); save(); setHint('棚を空にしました。「元に戻す」で戻せます。', true); });
+  undoBtn.addEventListener('click', () => {
+    if (!snap) return;
+    grid = JSON.parse(snap); snap = null; undoBtn.disabled = true; paintAll(); save();
+  });
+
+  /* ---------- 曲の保存 ---------- */
+  const SONGS_KEY = 'kudamono-gakudan-songs-v1';
+  const MAX_SONGS = 12;
+  const LET = {wm:'w', apple:'a', banana:'b', grapes:'g', straw:'s', lemon:'l'};
+  const UNLET = {w:'wm', a:'apple', b:'banana', g:'grapes', s:'straw', l:'lemon'};
+  const songNameEl = $('songname'), songListEl = $('songlist'), songMsgEl = $('songmsg');
+  const codeOut = $('codeout'), codeIn = $('codein'), codeMsgEl = $('codemsg');
+
+  // 曲コード: 小文字=ふつう / 大文字=凍結 / 数字(1〜6)=熟成。熟成がない曲は、これまでと同じKG1のまま。
+  const DIG = {wm:'1', apple:'2', banana:'3', grapes:'4', straw:'5', lemon:'6'};
+  const UNDIG = {'1':'wm', '2':'apple', '3':'banana', '4':'grapes', '5':'straw', '6':'lemon'};
+  function encodeSong(g, b){
+    let out = '', anyRipe = false;
+    for (let i = 0; i < STEPS; i++) for (let r = 0; r < ROWS; r++) {
+      const c = g[i][r];
+      if (!c) out += '.';
+      else if (c.ripe) { out += DIG[c.f]; anyRipe = true; }
+      else out += c.ice ? LET[c.f].toUpperCase() : LET[c.f];
+    }
+    return (anyRipe ? 'KG2:' : 'KG1:') + b + ':' + out;
+  }
+  function decodeSong(str){
+    const m = /^KG([12]):(\d{2,3}):([.a-zA-Z1-6]{80})$/.exec(String(str).replace(/\s+/g, ''));
+    if (!m) return null;
+    const v2 = m[1] === '2';
+    const b = +m[2]; if (b < 60 || b > 180) return null;
+    const g = emptyGrid();
+    for (let i = 0; i < 80; i++) {
+      const ch = m[3][i]; if (ch === '.') continue;
+      const at = [Math.floor(i/ROWS), i%ROWS];
+      if (ch >= '1' && ch <= '6') {
+        if (!v2) return null;
+        g[at[0]][at[1]] = {f:UNDIG[ch], ice:false, ripe:true};
+        continue;
+      }
+      const f = UNLET[ch.toLowerCase()]; if (!f) return null;
+      g[at[0]][at[1]] = {f, ice: ch !== ch.toLowerCase(), ripe:false};
+    }
+    return {g, b};
+  }
+  function updateCode(){ codeOut.value = encodeSong(grid, bpm); }
+  function esc(x){ return x.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  let storageOk = true;
+  try { localStorage.setItem('kg-test', '1'); localStorage.removeItem('kg-test'); } catch (e) { storageOk = false; }
+  function readSongs(){
+    try {
+      const a = JSON.parse(localStorage.getItem(SONGS_KEY) || '[]');
+      return Array.isArray(a) ? a.filter(x => x && typeof x.id === 'string' && typeof x.name === 'string' && decodeSong(x.code)) : [];
+    } catch (e) { return []; }
+  }
+  function writeSongs(a){ try { localStorage.setItem(SONGS_KEY, JSON.stringify(a)); return true; } catch (e) { return false; } }
+
+  let delArm = null, delTimer = null;
+  function renderSongs(){
+    if (!storageOk) {
+      songListEl.innerHTML = '';
+      songMsgEl.textContent = 'この表示では端末への保存ができません。右の曲コードをコピーして控えてください。';
+      return;
+    }
+    const a = readSongs();
+    if (!a.length) { songListEl.innerHTML = '<li class="empty">まだありません。名前をつけて「保存」すると、ここに並びます。</li>'; return; }
+    songListEl.innerHTML = a.map(x => {
+      const d = decodeSong(x.code), armed = delArm === x.id;
+      return '<li><span class="nm" title="' + esc(x.name) + '">' + esc(x.name) + '</span><span class="meta">' + d.b + ' BPM</span>' +
+        '<button type="button" class="btn sm" data-act="open" data-id="' + esc(x.id) + '">ひらく</button>' +
+        '<button type="button" class="btn sm' + (armed ? ' danger' : '') + '" data-act="del" data-id="' + esc(x.id) + '">' + (armed ? '本当に?' : '消す') + '</button></li>';
+    }).join('');
+  }
+  function saveSong(){
+    if (!storageOk) { songMsgEl.textContent = 'この表示では保存できません。曲コードで控えてね。'; return; }
+    const a = readSongs();
+    let name = songNameEl.value.trim().slice(0, 20);
+    if (!name) name = '曲' + (a.length + 1);
+    const code = encodeSong(grid, bpm);
+    const same = a.find(x => x.name === name);
+    if (same) { same.code = code; songMsgEl.textContent = '「' + name + '」を上書きしました。'; }
+    else {
+      if (a.length >= MAX_SONGS) { songMsgEl.textContent = '保存できるのは' + MAX_SONGS + '曲までです。いらない曲を消してね。'; return; }
+      a.unshift({id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, code});
+      songMsgEl.textContent = '「' + name + '」を保存しました。';
+    }
+    if (!writeSongs(a)) songMsgEl.textContent = '保存に失敗しました。曲コードで控えてね。';
+    songNameEl.value = '';
+    renderSongs();
+  }
+  function applySong(d){
+    takeSnap(); grid = d.g; bpm = d.b;
+    tempo.value = bpm; tempoOut.textContent = bpm + ' BPM';
+    paintAll(); save();
+  }
+  songListEl.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-act]'); if (!b) return;
+    const a = readSongs(), x = a.find(s => s.id === b.dataset.id); if (!x) return;
+    if (b.dataset.act === 'open') {
+      const d = decodeSong(x.code); if (!d) return;
+      applySong(d);
+      songMsgEl.textContent = '「' + x.name + '」をひらきました。「元に戻す」で前の棚に戻せます。';
+    } else if (delArm === x.id) {
+      writeSongs(a.filter(s => s.id !== x.id)); delArm = null; clearTimeout(delTimer);
+      songMsgEl.textContent = '「' + x.name + '」を消しました。';
+      renderSongs();
+    } else {
+      delArm = x.id; clearTimeout(delTimer);
+      delTimer = setTimeout(() => { delArm = null; renderSongs(); }, 3000);
+      renderSongs();
+    }
+  });
+  $('savesong').addEventListener('click', saveSong);
+  songNameEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveSong(); });
+  $('copycode').addEventListener('click', () => {
+    updateCode();
+    const done = () => { codeMsgEl.textContent = 'コピーしました。'; };
+    const fallback = () => { codeOut.focus(); codeOut.select(); codeMsgEl.textContent = '選択しました。コピーしてください。'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(codeOut.value).then(done, fallback);
+    else fallback();
+  });
+  $('loadcode').addEventListener('click', () => {
+    const d = decodeSong(codeIn.value);
+    if (!d) { codeMsgEl.textContent = '曲コードの形が違うようです。KG1: か KG2: で始まるコードを貼ってください。'; return; }
+    applySong(d); codeIn.value = '';
+    codeMsgEl.textContent = '読み込みました。「元に戻す」で前の棚に戻せます。';
+  });
+
+  /* ---------- 音のバランス(ミキサー) ---------- */
+  const mixBody = $('mixbody');
+  const toneLabel = (n) => (n > 0 ? '+' : '') + n;
+  function mixSummary(){
+    return '全体 ' + mix.all + ' / ' + ORDER.map(id => FR[id].name + ' 音量' + mix.v[id] + ' 音色' + toneLabel(mix.t[id])).join(' / ');
+  }
+  function buildMixer(){
+    let h = '<div class="mixrow"><div class="mname">全体</div>' +
+      '<label class="mslider"><span>音量 <output id="o-all">' + mix.all + '%</output></span>' +
+      '<input type="range" id="mx-all" data-k="all" min="0" max="150" step="5" value="' + mix.all + '" aria-label="全体の音量"></label><span></span></div>';
+    ORDER.forEach(id => {
+      h += '<div class="mixrow"><div class="mname"><span aria-hidden="true">' + FR[id].em + '</span>' + FR[id].name + '</div>' +
+        '<label class="mslider"><span>音量 <output id="ov-' + id + '">' + mix.v[id] + '%</output></span>' +
+        '<input type="range" id="mv-' + id + '" data-k="v" data-id="' + id + '" min="0" max="200" step="5" value="' + mix.v[id] + '" aria-label="' + FR[id].name + 'の音量"></label>' +
+        '<label class="mslider"><span>音色 <output id="ot-' + id + '">' + toneLabel(mix.t[id]) + '</output></span>' +
+        '<input type="range" id="mt-' + id + '" data-k="t" data-id="' + id + '" min="-12" max="12" step="1" value="' + mix.t[id] + '" aria-label="' + FR[id].name + 'の音色"></label></div>';
+    });
+    h += '<div class="mixfoot"><p class="note-line">音色は左ほどまるく、右ほど明るくなります。つまみを離すと、その果物の音が1回鳴ります。</p>' +
+      '<input type="text" id="mixcode" readonly aria-label="いまのバランス設定">' +
+      '<div class="field"><button type="button" class="btn sm" id="mixcopy">設定をコピー</button><button type="button" class="btn sm" id="mixreset">ぜんぶもどす</button></div>' +
+      '<p class="note-line" id="mixmsg" aria-live="polite"></p></div>';
+    mixBody.innerHTML = h;
+    $('mixcode').value = mixSummary();
+  }
+  function syncMixerUI(){
+    $('mx-all').value = mix.all; $('o-all').textContent = mix.all + '%';
+    ORDER.forEach(id => {
+      $('mv-' + id).value = mix.v[id]; $('ov-' + id).textContent = mix.v[id] + '%';
+      $('mt-' + id).value = mix.t[id]; $('ot-' + id).textContent = toneLabel(mix.t[id]);
+    });
+    $('mixcode').value = mixSummary();
+  }
+  mixBody.addEventListener('input', (e) => {
+    const el = e.target; if (!el.dataset || !el.dataset.k) return;
+    const val = +el.value, id = el.dataset.id;
+    if (el.dataset.k === 'all') { mix.all = val; $('o-all').textContent = val + '%'; }
+    else if (el.dataset.k === 'v') { mix.v[id] = val; $('ov-' + id).textContent = val + '%'; }
+    else { mix.t[id] = val; $('ot-' + id).textContent = toneLabel(val); }
+    applyMix(false); saveMix();
+    $('mixcode').value = mixSummary();
+  });
+  mixBody.addEventListener('change', (e) => {
+    const el = e.target; if (!el.dataset || !el.dataset.k) return;
+    if (!initAudio()) return;
+    const id = el.dataset.id || lastFruit;
+    playNote({f:id, ice:false}, 2, ctx.currentTime + 0.01, 0.9);
+  });
+  mixBody.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    const msg = $('mixmsg');
+    if (b.id === 'mixreset') {
+      mix.all = 100; ORDER.forEach(id => { mix.v[id] = 100; mix.t[id] = 0; });
+      applyMix(false); saveMix(); syncMixerUI(); msg.textContent = '全部、初期の設定にもどしました。';
+    } else if (b.id === 'mixcopy') {
+      const box = $('mixcode');
+      const fallback = () => { box.focus(); box.select(); msg.textContent = '選択しました。コピーしてください。'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(box.value).then(() => { msg.textContent = 'コピーしました。'; }, fallback);
+      else fallback();
+    }
+  });
+
+  /* ---------- ぶつける遊び場 ---------- */
+  /* PHYS-START */
+  const BW = 360, BH = 460, BR = 17, MELT = 20, RIPEN = 6;
+  function makeWorld(){
+    const G = 820, FLOOR = BH - 6, TH = 4, MAXF = 12, VMAX = 1100;
+    const MAXB = 6, MAXP = 8, MINLEN = 30, TOPY = 44, PEGR = 8, SNAP = 14;   // 設計できる板・ペグの上限など(上の帯は、果物が落ちてくる場所なので空けておく)
+    const DEF_BOARDS = [
+      {x1:0,   y1:115, x2:236, y2:164},   // 高い側は壁まで届かせて、壁際に果物がはまらないようにする
+      {x1:360, y1:231, x2:124, y2:280},
+      {x1:0,   y1:345, x2:236, y2:394},
+    ];
+    const DEF_PEGS = [{x:300, y:176, r:PEGR}, {x:60, y:305, r:PEGR}];
+    const boards = DEF_BOARDS.map(b => ({...b}));
+    const pegs = DEF_PEGS.map(p => ({...p}));
+    const fruits = [];
+    const num = (v) => typeof v === 'number' && isFinite(v);
+    const clampX = (x) => { x = Math.max(0, Math.min(BW, x)); return x < SNAP ? 0 : x > BW - SNAP ? BW : Math.round(x); };   // 壁ぎわは壁にくっつけて、果物がはさまらないようにする
+    const clampY = (y) => Math.round(Math.max(TOPY, Math.min(FLOOR - 12, y)));
+    const clampPX = (x) => Math.round(Math.max(PEGR + 2, Math.min(BW - PEGR - 2, x)));
+    let uid = 1, out = null, wx = 0, wy = 0;
+    const rest = (f) => 0.5 + 0.28 * f.ice - 0.18 * f.ripe;   // 凍っているほど硬くてよく跳ね、熟すとやわらかく跳ねにくい
+
+    function capsule(f, x1, y1, x2, y2, rad){
+      const dx = x2 - x1, dy = y2 - y1, l2 = dx*dx + dy*dy;
+      let t = l2 ? ((f.x - x1)*dx + (f.y - y1)*dy) / l2 : 0;
+      t = t < 0 ? 0 : t > 1 ? 1 : t;
+      const cx = x1 + dx*t, cy = y1 + dy*t;
+      let nx = f.x - cx, ny = f.y - cy;
+      const d = Math.hypot(nx, ny), min = BR + rad;
+      if (d >= min) return null;
+      if (d < 1e-6) { nx = 0; ny = -1; } else { nx /= d; ny /= d; }
+      return {nx, ny, pen:min - d, cx, cy};
+    }
+    function hitStatic(f, h, kind, idx){
+      f.x += h.nx*h.pen; f.y += h.ny*h.pen;
+      const vn = f.vx*h.nx + f.vy*h.ny;
+      if (vn >= 0) return;
+      const imp = -vn;
+      const e = imp < 45 ? 0 : rest(f);       // ゆっくり当たったときは跳ねずに転がす
+      f.vx -= (1 + e)*vn*h.nx; f.vy -= (1 + e)*vn*h.ny;
+      const tx = -h.ny, ty = h.nx, vt = f.vx*tx + f.vy*ty;
+      f.vx -= vt*0.012*tx; f.vy -= vt*0.012*ty;
+      if (Math.abs(vt) > 40) f.w += (vt / BR - f.w) * 0.3;   // 転がるぶん回る(ほぼ止まっているときは回さない)
+      if (imp >= 60) out.push({kind, idx, x:h.cx, y:h.cy, imp, a:f, b:null});
+    }
+    function pairs(){
+      for (let i = 0; i < fruits.length; i++) for (let j = i + 1; j < fruits.length; j++) {
+        const a = fruits[i], b = fruits[j];
+        let nx = b.x - a.x, ny = b.y - a.y;
+        const d2 = nx*nx + ny*ny, min = 2*BR;
+        if (d2 >= min*min) continue;
+        const d = Math.sqrt(d2);
+        if (d < 1e-6) { nx = 0; ny = -1; } else { nx /= d; ny /= d; }
+        const pen = min - d;
+        a.x -= nx*pen/2; a.y -= ny*pen/2; b.x += nx*pen/2; b.y += ny*pen/2;
+        const rel = (b.vx - a.vx)*nx + (b.vy - a.vy)*ny;
+        if (rel >= 0) continue;
+        const imp = -rel;
+        const e = imp < 45 ? 0 : (rest(a) + rest(b)) / 2;
+        const j2 = -(1 + e)*rel / 2;
+        a.vx -= j2*nx; a.vy -= j2*ny; b.vx += j2*nx; b.vy += j2*ny;
+        if (imp >= 70) out.push({kind:'fruit', idx:0, x:(a.x + b.x)/2, y:(a.y + b.y)/2, imp, a, b});
+      }
+    }
+    return {
+      boards, pegs, fruits, floor:FLOOR, thick:TH,
+      add(fid, x){
+        const f = {id:uid++, fid, x:Math.max(BR, Math.min(BW - BR, x)), y:BR + 2, vx:(Math.random() - 0.5)*40, vy:60,
+                   a:(Math.random() - 0.5)*0.6, w:(Math.random() - 0.5)*2, ice:0, ripe:0, rdir:0, last:0};
+        if (fruits.length >= MAXF) fruits.shift();
+        fruits.push(f);
+        return f;
+      },
+      pick(x, y){
+        let best = null, bd = (BR + 8)*(BR + 8);
+        for (const f of fruits) { const d = (f.x - x)*(f.x - x) + (f.y - y)*(f.y - y); if (d < bd) { bd = d; best = f; } }
+        return best;
+      },
+      poke(f){ f.vy = -330; f.vx += (Math.random() - 0.5)*160; },
+      freeze(f){ f.ice = f.ice > 0 ? 0 : 1; if (f.ice) { f.ripe = 0; f.rdir = 0; } },
+      // 熟成: 約6秒かけて熟していく。熟している途中・熟したあとにもう一度押すと、もとに戻っていく
+      ripen(f){ if (f.rdir > 0 || (f.rdir === 0 && f.ripe >= 1)) f.rdir = -1; else { f.rdir = 1; f.ice = 0; } },
+      setWind(ax, ay){ wx = ax; wy = ay; },
+      // ---- 設計(板とペグの配置) ----
+      limits:{maxB:MAXB, maxP:MAXP, minLen:MINLEN},
+      addBoard(x1, y1, x2, y2){
+        if (boards.length >= MAXB) return null;
+        const b = {x1:clampX(x1), y1:clampY(y1), x2:clampX(x2), y2:clampY(y2)};
+        if (Math.hypot(b.x2 - b.x1, b.y2 - b.y1) < MINLEN) return null;
+        boards.push(b); return boards.length - 1;
+      },
+      addPeg(x, y){
+        if (pegs.length >= MAXP) return -1;
+        pegs.push({x:clampPX(x), y:clampY(y), r:PEGR}); return pegs.length - 1;
+      },
+      moveEnd(i, end, x, y){        // 板の端をうごかす。短くなりすぎるときは動かさない
+        const b = boards[i]; if (!b) return false;
+        const nx = clampX(x), ny = clampY(y);
+        const ox = end === 1 ? b.x2 : b.x1, oy = end === 1 ? b.y2 : b.y1;
+        if (Math.hypot(nx - ox, ny - oy) < MINLEN) return false;
+        if (end === 1) { b.x1 = nx; b.y1 = ny; } else { b.x2 = nx; b.y2 = ny; }
+        return true;
+      },
+      movePeg(i, x, y){ const p = pegs[i]; if (!p) return false; p.x = clampPX(x); p.y = clampY(y); return true; },
+      removeBoard(i){ if (i >= 0 && i < boards.length) boards.splice(i, 1); },
+      removePeg(i){ if (i >= 0 && i < pegs.length) pegs.splice(i, 1); },
+      resetLayout(){ boards.length = 0; pegs.length = 0; DEF_BOARDS.forEach(b => boards.push({...b})); DEF_PEGS.forEach(p => pegs.push({...p})); },
+      emptyLayout(){ boards.length = 0; pegs.length = 0; },
+      getLayout(){ return {boards:boards.map(b => ({x1:b.x1, y1:b.y1, x2:b.x2, y2:b.y2})), pegs:pegs.map(p => ({x:p.x, y:p.y}))}; },
+      setLayout(L){                  // 保存データから戻す。形がおかしければ何もしない
+        if (!L || !Array.isArray(L.boards) || !Array.isArray(L.pegs)) return false;
+        if (L.boards.length > MAXB || L.pegs.length > MAXP) return false;
+        const nb = [], np = [];
+        for (const b of L.boards) {
+          if (!b || ![b.x1, b.y1, b.x2, b.y2].every(num)) return false;
+          const c = {x1:clampX(b.x1), y1:clampY(b.y1), x2:clampX(b.x2), y2:clampY(b.y2)};
+          if (Math.hypot(c.x2 - c.x1, c.y2 - c.y1) >= MINLEN) nb.push(c);
+        }
+        for (const p of L.pegs) { if (!p || !num(p.x) || !num(p.y)) return false; np.push({x:clampPX(p.x), y:clampY(p.y), r:PEGR}); }
+        boards.length = 0; pegs.length = 0; nb.forEach(b => boards.push(b)); np.forEach(p => pegs.push(p));
+        return true;
+      },
+      remove(f){ const i = fruits.indexOf(f); if (i >= 0) fruits.splice(i, 1); },
+      clear(){ fruits.length = 0; },
+      shake(){ fruits.forEach(f => { f.vy -= 240 + Math.random()*220; f.vx += (Math.random() - 0.5)*320; }); },
+      step(dt, o){
+        out = o;
+        for (const f of fruits) {
+          f.vx += wx*dt; f.vy += (G + wy)*dt;
+          const sp = Math.hypot(f.vx, f.vy);
+          if (sp > VMAX) { f.vx *= VMAX / sp; f.vy *= VMAX / sp; }
+          f.x += f.vx*dt; f.y += f.vy*dt; f.a += f.w*dt; f.w *= 1 - (sp < 40 ? 8 : 0.3)*dt;
+          if (f.ice > 0) f.ice = Math.max(0, f.ice - dt / MELT);   // 溶ける
+          if (f.rdir) {                                            // 熟す(または戻る)
+            f.ripe += f.rdir * dt / RIPEN;
+            if (f.ripe >= 1) { f.ripe = 1; f.rdir = 0; } else if (f.ripe <= 0) { f.ripe = 0; f.rdir = 0; }
+          }
+        }
+        for (let it = 0; it < 2; it++) {
+          for (const f of fruits) {
+            for (let i = 0; i < boards.length; i++) { const b = boards[i], h = capsule(f, b.x1, b.y1, b.x2, b.y2, TH); if (h) hitStatic(f, h, 'board', i); }
+            for (let i = 0; i < pegs.length; i++) { const p = pegs[i], h = capsule(f, p.x, p.y, p.x, p.y, p.r); if (h) hitStatic(f, h, 'peg', i); }
+            if (f.x < BR) hitStatic(f, {nx:1, ny:0, pen:BR - f.x, cx:0, cy:f.y}, 'wall', 0);
+            else if (f.x > BW - BR) hitStatic(f, {nx:-1, ny:0, pen:f.x - (BW - BR), cx:BW, cy:f.y}, 'wall', 1);
+            if (f.y > FLOOR - BR) hitStatic(f, {nx:0, ny:-1, pen:f.y - (FLOOR - BR), cx:f.x, cy:FLOOR}, 'floor', 0);
+          }
+          pairs();
+        }
+      },
+    };
+  }
+  // 風: 果物を横に(突風のときは少し上にも)押す力を、時間の関数として返す
+  function makeWind(){
+    let t0 = null, g = null;
+    const TAU = Math.PI * 2;
+    return {
+      reset(){ t0 = null; g = null; },
+      at(level, now){
+        if (!level) return [0, 0];
+        if (t0 === null) t0 = now;
+        const t = now - t0;
+        if (level === 1) return [60*Math.sin(TAU*t/7), 0];                                  // 弱風: ゆっくり左右にゆれる
+        if (level === 2) return [170*Math.sin(TAU*t/4.5) + 50*Math.sin(TAU*t/1.7), 0];      // 強風: 大きく、少し乱れて左右にふく
+        if (!g) g = {start:-9, dur:0.5, dir:1, amp:600, next:t + 1.0 + Math.random()*1.5};   // 突風: ときどき、いきなり強い一吹き
+        if (t >= g.next) { g.start = t; g.dur = 0.45 + Math.random()*0.3; g.dir = Math.random() < 0.5 ? -1 : 1; g.amp = 480 + Math.random()*240; g.next = t + 2.2 + Math.random()*2.3; }
+        const u = (t - g.start) / g.dur, env = (u >= 0 && u <= 1) ? Math.pow(Math.sin(Math.PI*u), 2) : 0;
+        return [g.dir*g.amp*env + 20*Math.sin(TAU*t/3), -170*env];
+      },
+    };
+  }
+  /* PHYS-END */
+
+  const world = makeWorld(), wind = makeWind();
+  const stage = $('stage'), sctx = stage.getContext('2d');
+  const ZONES = NOTE.slice().reverse();   // 左から ド レ ミ ソ ラ
+  let bRun = false, bLast = 0, bAcc = 0, pal = null, frameDt = 0.016, curWind = [0, 0];
+  const ripples = [], flashAt = new Array(8).fill(0), recent = [];
+  let dtool = 'board', drag = null, jamAcc = 0, jamShown = false;   // 設計の道具/ドラッグ中の操作、止まった果物の見張り
+  const streaks = Array.from({length:14}, () => ({x:Math.random()*BW, y:30 + Math.random()*(BH - 70), len:14 + Math.random()*26, d:(Math.random() - 0.5)*20}));
+
+  /* あそびのオプション(端末に覚えておく): リズム補正と風 */
+  const OPT_KEY = 'kudamono-gakudan-opts-v1';
+  const opts = {q:false, wind:0};
+  try {
+    const o = JSON.parse(localStorage.getItem(OPT_KEY) || 'null');
+    if (o) { opts.q = o.q === true; if (o.wind === 1 || o.wind === 2 || o.wind === 3) opts.wind = o.wind; }
+  } catch (e) {}
+  function saveOpts(){ try { localStorage.setItem(OPT_KEY, JSON.stringify(opts)); } catch (e) {} }
+  let qOrigin = 0, qTickK = -1, qTickN = 0;   // リズム補正の基準時刻と、同じ拍に重なる音の数え上げ
+
+  function readPal(){
+    const cs = getComputedStyle(document.documentElement), g = (n) => cs.getPropertyValue(n).trim();
+    pal = {ink:g('--ink'), muted:g('--muted'), cell:g('--cell'), shelf:g('--shelf'), accent:g('--accent'), ice:g('--ice-edge'), ripe:g('--ripe-edge')};
+  }
+  function fitStage(){
+    const cw = stage.clientWidth; if (!cw) return;
+    const w = Math.round(cw * Math.min(window.devicePixelRatio || 1, 2.5));
+    if (stage.width !== w) { stage.width = w; stage.height = Math.round(w * BH / BW); }
+  }
+
+  // 果物の音: 当たった場所が左ほど低く右ほど高い。凍っているほど高く、溶けると1段ずつ下がる。熟した果物は1オクターブ下のまるい音。
+  // delay: リズム補正のとき、次の拍まで待つ秒数
+  function fruitNote(f, x, v, delay){
+    const k = Math.max(0, Math.min(4, Math.floor(x / BW * 5)));
+    const ripe = f.ripe > 0.5;
+    const idx = k + (ripe ? 0 : Math.ceil(f.ice * 5 - 1e-6));
+    let midi = FR[f.fid].base + SCALE[idx % 5] + 12*Math.floor(idx / 5);
+    if (ripe) midi = ripeMidi(midi);
+    const hz = 440 * Math.pow(2, (midi - 69) / 12), hard = f.ice > 0.5;
+    voice(f.fid, ctx.currentTime + 0.005 + (delay || 0), hz, v * FR[f.fid].trim * (hard ? 0.85 : ripe ? 0.95 : 1), hard, ripe);
+  }
+  // リズム補正: いまから数えて次の拍(8分音符)までの待ち時間と、その拍の番号
+  function quantInfo(){
+    const step = recStepSec(), nowP = performance.now() / 1000;
+    const k = Math.ceil((nowP - qOrigin) / step - 1e-4);
+    return {k, delay: Math.max(0, qOrigin + k * step - nowP)};
+  }
+  function onHit(e, now){
+    const qd = (opts.q && ctx) ? quantInfo() : null;
+    const delay = qd ? qd.delay : 0;               // 音を待たせるぶん、見た目(輪っか・棚の光)も同じだけ待たせる
+    if (!reduce) { ripples.push({x:e.x, y:e.y, t:now + delay}); if (ripples.length > 16) ripples.shift(); }
+    if (e.kind === 'board') flashAt[e.idx] = now + delay;
+    if (!ctx) return;
+    while (recent.length && now - recent[0] > 0.12) recent.shift();
+    const v = Math.max(0.25, Math.min(1, e.imp / 650));
+    for (const f of (e.b ? [e.a, e.b] : [e.a])) {
+      if (recent.length >= 6 || now - f.last < 0.07) continue;
+      if (qd) {                                    // 同じ拍に重なる音は6つまで
+        if (qTickK !== qd.k) { qTickK = qd.k; qTickN = 0; }
+        if (qTickN >= 6) continue;
+        qTickN++;
+      }
+      f.last = now; recent.push(now);
+      fruitNote(f, e.x, v, delay);
+      if (rec) recNote(f, e.x, v, now, qd ? qd.k : undefined);   // 実際に鳴った音だけをきろくする
+    }
+  }
+
+  function drawStage(now){
+    const sc = stage.width / BW;
+    sctx.setTransform(sc, 0, 0, sc, 0, 0);
+    sctx.clearRect(0, 0, BW, BH);
+    // 5つの音の帯(左が低く、右が高い)
+    for (let k = 0; k < 5; k++) {
+      if (k % 2 === 0) { sctx.globalAlpha = 0.55; sctx.fillStyle = pal.cell; sctx.fillRect(k*BW/5, 0, BW/5, BH); sctx.globalAlpha = 1; }
+    }
+    sctx.fillStyle = pal.muted; sctx.font = '700 11px sans-serif'; sctx.textAlign = 'center'; sctx.textBaseline = 'middle';
+    ZONES.forEach((n, k) => sctx.fillText(n, (k + 0.5)*BW/5, 12));
+    // 棚(ぶつかると光る)
+    sctx.lineCap = 'round';
+    world.boards.forEach((b, i) => {
+      sctx.lineWidth = world.thick*2; sctx.strokeStyle = pal.shelf;
+      sctx.beginPath(); sctx.moveTo(b.x1, b.y1); sctx.lineTo(b.x2, b.y2); sctx.stroke();
+      const fa = now - flashAt[i], fl = 1 - fa / 0.3;
+      if (fa >= 0 && fl > 0) { sctx.globalAlpha = fl; sctx.strokeStyle = pal.accent; sctx.beginPath(); sctx.moveTo(b.x1, b.y1); sctx.lineTo(b.x2, b.y2); sctx.stroke(); sctx.globalAlpha = 1; }
+    });
+    sctx.fillStyle = pal.shelf;
+    world.pegs.forEach(p => { sctx.beginPath(); sctx.arc(p.x, p.y, p.r, 0, Math.PI*2); sctx.fill(); });
+    sctx.fillRect(0, world.floor, BW, BH - world.floor);
+    // 風: 流れ線(風がふいているときだけ。動きを減らす設定のときは出さない)
+    if (opts.wind && !reduce) {
+      const ax = curWind[0], dir = ax >= 0 ? 1 : -1;
+      sctx.lineWidth = 1.5; sctx.lineCap = 'round'; sctx.strokeStyle = pal.muted;
+      sctx.globalAlpha = 0.1 + 0.22*Math.min(1, Math.abs(ax) / 300);
+      for (const s of streaks) {
+        s.x += (ax*0.6 + s.d) * frameDt;
+        if (s.x > BW + 30) s.x -= BW + 60; else if (s.x < -30) s.x += BW + 60;
+        sctx.beginPath(); sctx.moveTo(s.x, s.y); sctx.lineTo(s.x - dir*s.len, s.y); sctx.stroke();
+      }
+      sctx.globalAlpha = 1;
+    }
+    // 果物
+    sctx.font = Math.round(BR*1.8) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    for (const f of world.fruits) {
+      sctx.save(); sctx.translate(f.x, f.y); sctx.rotate(f.a);
+      sctx.fillText(FR[f.fid].em, 0, 1);
+      if (f.ice > 0) {
+        sctx.beginPath(); sctx.arc(0, 0, BR + 1, 0, Math.PI*2);
+        sctx.globalAlpha = 0.38*f.ice; sctx.fillStyle = pal.ice; sctx.fill();
+        sctx.globalAlpha = 0.45 + 0.55*f.ice; sctx.lineWidth = 2; sctx.strokeStyle = pal.ice; sctx.stroke();
+        sctx.globalAlpha = 1;
+      }
+      if (f.ripe > 0) {                       // 熟していくほど、茶色いもやと斑点が濃くなる
+        sctx.beginPath(); sctx.arc(0, 0, BR + 1, 0, Math.PI*2);
+        sctx.globalAlpha = 0.34*f.ripe; sctx.fillStyle = pal.ripe; sctx.fill();
+        sctx.globalAlpha = 0.4 + 0.6*f.ripe; sctx.lineWidth = 2; sctx.strokeStyle = pal.ripe; sctx.stroke();
+        sctx.globalAlpha = 0.9*f.ripe; sctx.fillStyle = pal.ripe;
+        [[-6, -4, 1.8], [5, -1, 1.8], [-2, 6, 1.5]].forEach(([dx, dy, rr]) => { sctx.beginPath(); sctx.arc(dx, dy, rr, 0, Math.PI*2); sctx.fill(); });
+        sctx.globalAlpha = 1;
+      }
+      sctx.restore();
+    }
+    // ぶつかった印
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const age = (now - ripples[i].t) / 0.35;
+      if (age >= 1) { ripples.splice(i, 1); continue; }
+      if (age < 0) continue;                  // リズム補正で、まだ鳴る前の輪っか
+      sctx.globalAlpha = 1 - age; sctx.lineWidth = 2; sctx.strokeStyle = pal.accent;
+      sctx.beginPath(); sctx.arc(ripples[i].x, ripples[i].y, 6 + age*16, 0, Math.PI*2); sctx.stroke();
+      sctx.globalAlpha = 1;
+    }
+    // きろく中: 上に2小節ぶんの進みぐあい(16ステップの目盛り、小節の境目は長め)
+    if (rec) {
+      const p = Math.max(0, Math.min(1, (now - rec.t0) / rec.end));
+      sctx.fillStyle = pal.cell; sctx.fillRect(0, 0, BW, 6);
+      sctx.fillStyle = pal.accent; sctx.fillRect(0, 0, BW*p, 6);
+      sctx.fillStyle = pal.ink; sctx.globalAlpha = 0.4;
+      for (let i = 1; i < STEPS; i++) sctx.fillRect(BW*i/STEPS - 0.5, 0, 1, i % 8 === 0 ? 6 : 3);
+      sctx.globalAlpha = 1;
+    }
+    if (mode === 'design') drawDesign();
+    // 風の向きと強さ(上の真ん中の矢印)
+    if (opts.wind && mode !== 'design') {
+      const len = Math.max(-1, Math.min(1, curWind[0] / 400)) * 36, cx = BW/2, wy0 = 30;
+      sctx.strokeStyle = pal.accent; sctx.fillStyle = pal.accent; sctx.globalAlpha = 0.8; sctx.lineWidth = 2.5; sctx.lineCap = 'round';
+      sctx.beginPath(); sctx.moveTo(cx, wy0); sctx.lineTo(cx + len, wy0); sctx.stroke();
+      if (Math.abs(len) > 6) {
+        const d = len > 0 ? 1 : -1;
+        sctx.beginPath(); sctx.moveTo(cx + len, wy0); sctx.lineTo(cx + len - d*7, wy0 - 4.5); sctx.lineTo(cx + len - d*7, wy0 + 4.5); sctx.closePath(); sctx.fill();
+      }
+      sctx.beginPath(); sctx.arc(cx, wy0, 2.5, 0, Math.PI*2); sctx.fill();
+      sctx.globalAlpha = 1;
+    }
+  }
+  // 設計モードの重ね描き: 板の端の丸い持ち手、ペグのまわりの点線、いま作っている板の予告線
+  function drawDesign(){
+    sctx.lineCap = 'round';
+    sctx.setLineDash([3, 3]); sctx.lineWidth = 1.5; sctx.strokeStyle = pal.muted;
+    world.pegs.forEach(p => { sctx.beginPath(); sctx.arc(p.x, p.y, p.r + 5, 0, Math.PI*2); sctx.stroke(); });
+    sctx.setLineDash([]);
+    const knob = (x, y, on) => {
+      sctx.beginPath(); sctx.arc(x, y, on ? 10 : 8, 0, Math.PI*2);
+      sctx.fillStyle = pal.cell; sctx.fill(); sctx.lineWidth = 2.5; sctx.strokeStyle = on ? pal.accent : pal.ink; sctx.stroke();
+    };
+    world.boards.forEach((b, i) => {
+      const a = drag && drag.type === 'end' && drag.i === i ? drag.end : 0;
+      knob(b.x1, b.y1, a === 1); knob(b.x2, b.y2, a === 2);
+    });
+    if (drag && drag.type === 'new') {
+      const ok = Math.hypot(drag.x1 - drag.x0, drag.y1 - drag.y0) >= world.limits.minLen;
+      sctx.setLineDash([7, 6]); sctx.lineWidth = world.thick*2; sctx.strokeStyle = ok ? pal.accent : pal.muted; sctx.globalAlpha = 0.8;
+      sctx.beginPath(); sctx.moveTo(drag.x0, drag.y0); sctx.lineTo(drag.x1, drag.y1); sctx.stroke();
+      sctx.setLineDash([]); sctx.globalAlpha = 1;
+      knob(drag.x0, drag.y0, true); knob(drag.x1, drag.y1, true);
+    }
+    if (drag && drag.type === 'peg' && world.pegs[drag.i]) { const q = world.pegs[drag.i]; sctx.lineWidth = 2.5; sctx.strokeStyle = pal.accent; sctx.beginPath(); sctx.arc(q.x, q.y, q.r + 5, 0, Math.PI*2); sctx.stroke(); }
+  }
+  function bframe(ts){
+    if (!bRun) return;
+    const now = ts / 1000, H = 1/120;
+    const dtf = Math.min(0.05, bLast ? now - bLast : 0.016);
+    bAcc += dtf; bLast = now; frameDt = dtf;
+    if (mode !== 'design') {          // 設計モードでは果物も風も止めて、置くことだけに集中する
+      curWind = wind.at(opts.wind, now); world.setWind(curWind[0], curWind[1]);
+      const evs = []; let n = 0;
+      while (bAcc >= H && n < 8) { world.step(H, evs); bAcc -= H; n++; }
+      if (n === 8) bAcc = 0;
+      evs.forEach(e => onHit(e, now));
+      if (rec) recTick(now);
+      watchJam(dtf);
+    } else bAcc = 0;
+    drawStage(now);
+    requestAnimationFrame(bframe);
+  }
+  // 3秒以上、宙でじっと止まっている果物がいたら、「ゆらす」をすすめる(板の上で休んでいるだけのこともあるので、やさしい言い方で)
+  function watchJam(dt){
+    let still = false;
+    for (const f of world.fruits) if (Math.hypot(f.vx, f.vy) < 12 && f.y < world.floor - BR - 6) { still = true; break; }
+    jamAcc = still ? jamAcc + dt : 0;
+    if (!still) jamShown = false;
+    else if (jamAcc > 3 && !jamShown) { jamShown = true; $('optmsg').textContent = '止まっている果物がいるよ。「ゆらす」を押すと、ぽんと動くよ。'; }
+  }
+  function bounceStart(){ bRun = true; bLast = 0; bAcc = 0; qOrigin = performance.now() / 1000; readPal(); fitStage(); requestAnimationFrame(bframe); }
+  function bounceStop(){ bRun = false; }
+  if (window.ResizeObserver) new ResizeObserver(() => { if (bRun) fitStage(); }).observe(stage);
+  else window.addEventListener('resize', () => { if (bRun) fitStage(); });
+  new MutationObserver(() => { if (pal) readPal(); }).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+  if (window.matchMedia) {
+    const mq = matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', () => { if (pal) readPal(); });
+  }
+
+  stage.addEventListener('click', (e) => {
+    if (mode === 'design') return;
+    const ok = initAudio();
+    const r = stage.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width * BW, y = (e.clientY - r.top) / r.height * BH;
+    const hit = world.pick(x, y);
+    if (tool === 'erase') { if (hit) world.remove(hit); return; }
+    if (tool === 'ice') {
+      if (!hit) { setHint('凍らせるには、落ちている果物をタップしてね。', true); return; }
+      world.freeze(hit);
+      if (ok) fruitNote(hit, hit.x, 0.8);
+      return;
+    }
+    if (tool === 'ripe') {
+      if (!hit) { setHint('熟成させるには、落ちている果物をタップしてね。', true); return; }
+      world.ripen(hit);
+      return;
+    }
+    if (hit) { world.poke(hit); return; }
+    world.add(tool, x);
+  });
+  $('drop').addEventListener('click', () => {
+    initAudio();
+    world.add(FR[tool] ? tool : lastFruit, BR + Math.random()*(BW - 2*BR));
+  });
+  $('shake').addEventListener('click', () => { initAudio(); world.shake(); jamShown = false; jamAcc = 0; });
+  $('sweep').addEventListener('click', () => { world.clear(); jamAcc = 0; jamShown = false; setHint('果物だけ片づけました。板とペグはそのままだよ。', true); });
+
+  /* ---------- ぶつけた音を棚にする ---------- */
+  /* 2小節(16ステップ)ぶん、実際に鳴った音を時刻と場所つきで集め、棚のマスに丸める。
+     時刻 → 8分音符ごとのステップ(いちばん近いマス) / 横位置 → 5つの帯(左=ド … 右=ラ) = 棚の下段〜上段 */
+  let rec = null, recResult = null;
+  const recBtn = $('rec'), recLabel = $('reclabel'), recMsg = $('recmsg'), recPanel = $('recpanel'),
+        recMini = $('recmini'), recSum = $('recsum');
+  const REC_LABEL = '2小節きろく';
+  const recStepSec = () => 60 / bpm / 2;
+
+  function updateRecHint(){
+    if (rec) return;
+    recMsg.textContent = 'きろくは約' + (STEPS * recStepSec()).toFixed(1) + '秒(いまのテンポ ' + bpm + ' BPM)。ぶつかって鳴った音が、2小節の棚になるよ。';
+  }
+  function recStart(){
+    if (!initAudio()) { recMsg.textContent = 'このブラウザでは音を鳴らせません。'; return; }
+    const step = recStepSec();
+    const t0 = performance.now() / 1000;
+    rec = {t0, step, end: step * STEPS, notes: [], shown: -1};
+    qOrigin = t0;   // リズム補正の拍の数え始めも、きろくの頭にそろえる
+    recResult = null; recPanel.hidden = true;
+    tempo.disabled = true; pickRow.classList.add('off'); pickSel.disabled = true;
+    recBtn.setAttribute('aria-pressed', 'true');
+    recLabel.textContent = 'きろく中… あと' + rec.end.toFixed(1) + '秒';
+    recMsg.textContent = '鳴った音を記録しているよ。果物を落としたり、跳ねさせたりしてね。(もう一度おすと中止)';
+  }
+  function recReset(){
+    rec = null; tempo.disabled = false; pickRow.classList.remove('off'); pickSel.disabled = false;
+    recBtn.setAttribute('aria-pressed', 'false'); recLabel.textContent = REC_LABEL;
+  }
+  function recCancel(msg){
+    if (!rec) return;
+    recReset();
+    recMsg.textContent = msg || 'きろくをやめました。';
+  }
+  // qk: リズム補正がONのとき、その音が鳴る拍の番号(きろくの頭から数える)。OFFのときは、いちばん近いマスに丸める。
+  function recNote(f, x, v, now, qk){
+    const t = now - rec.t0;
+    if (t < -0.05 || t > rec.end + rec.step) return;
+    const s = qk !== undefined ? ((qk % STEPS) + STEPS) % STEPS : Math.max(0, Math.min(STEPS - 1, Math.round(t / rec.step)));
+    const k = Math.max(0, Math.min(4, Math.floor(x / BW * 5)));   // 0=ド(左) … 4=ラ(右)
+    rec.notes.push({s, r:4 - k, f:f.fid, ice:f.ice > 0.5, ripe:f.ripe > 0.5, v});
+  }
+  function recTick(now){
+    const t = now - rec.t0;
+    if (t >= rec.end) { recFinish(); return; }
+    const left = Math.ceil((rec.end - t) * 10) / 10;
+    if (left !== rec.shown) { rec.shown = left; recLabel.textContent = 'きろく中… あと' + left.toFixed(1) + '秒'; }
+  }
+  function renderMini(g){
+    let h = '';
+    for (let b = 0; b < 2; b++) {
+      h += '<div class="recbar">';
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < 8; c++) {
+        const cell = g[b*8 + c][r];
+        h += cell ? '<span class="mc on f-' + cell.f + (cell.ripe ? ' ripe' : cell.ice ? ' ice' : '') + '">' + FR[cell.f].em + '</span>' : '<span class="mc"></span>';
+      }
+      h += '</div>';
+    }
+    recMini.innerHTML = h;
+  }
+  function recFinish(){
+    const notes = rec.notes;
+    recReset();
+    // 同じマスに重なった音は、勢いの強いほうを残す
+    const best = new Map(); let dropped = 0;
+    notes.forEach(n => {
+      const key = n.s * ROWS + n.r, b = best.get(key);
+      if (!b) best.set(key, n);
+      else { dropped++; if (n.v > b.v) best.set(key, n); }
+    });
+    if (!best.size) {
+      recResult = null; recPanel.hidden = true;
+      recMsg.textContent = '音が記録されませんでした。果物を落としてから、もう一度きろくしてね。';
+      return;
+    }
+    const g = emptyGrid();
+    best.forEach(n => { g[n.s][n.r] = {f:n.f, ice:n.ice, ripe:n.ripe}; });
+    recResult = {g, count:best.size, dropped};
+    renderMini(g);
+    recSum.textContent = best.size + '個の音を記録しました' + (dropped ? '(同じマスに重なった' + dropped + '個は、勢いの強いほうを残しました)' : '');
+    recMini.setAttribute('aria-label', '記録した音の並び。' + best.size + '個');
+    recPanel.hidden = false;
+    recMsg.textContent = 'できたよ。棚に変換すると、あとから直せます。';
+    try { recPanel.scrollIntoView({block:'nearest', behavior: reduce ? 'auto' : 'smooth'}); } catch (e) {}
+  }
+  function applyRec(how){
+    if (!recResult) return;
+    const g = recResult.g;
+    takeSnap();
+    let added = 0, skipped = 0;
+    if (how === 'replace') {
+      grid = JSON.parse(JSON.stringify(g)); added = recResult.count;
+    } else {
+      for (let s = 0; s < STEPS; s++) for (let r = 0; r < ROWS; r++) {
+        if (!g[s][r]) continue;
+        if (grid[s][r]) skipped++; else { grid[s][r] = {f:g[s][r].f, ice:g[s][r].ice, ripe:!!g[s][r].ripe}; added++; }
+      }
+    }
+    setMode('shelf');
+    paintAll(); save();
+    setHint(how === 'replace'
+      ? 'ぶつけて作った曲を棚に並べました。再生してみよう。「元に戻す」で前の棚に戻せます。'
+      : added + '個を空いているマスに足しました' + (skipped ? '(埋まっていた' + skipped + '個は足していません)' : '') + '。「元に戻す」で戻せます。');
+    playBtn.focus({preventScroll:true});
+  }
+  recBtn.addEventListener('click', () => { rec ? recCancel() : recStart(); });
+  $('recreplace').addEventListener('click', () => applyRec('replace'));
+  $('recadd').addEventListener('click', () => applyRec('add'));
+
+  /* ---------- リズム補正と風のボタン ---------- */
+  const WIND_NAMES = ['なし', '弱風', '強風', '突風'];
+  const WIND_TIPS = ['風はふいていません。', 'ふわっと、ゆっくり左右にゆれる風。', '大きく左右にふく、強い風。', 'ときどき、いきなり強い風がふくよ。'];
+  const qBtn = $('qbtn'), windBtn = $('windbtn'), optMsg = $('optmsg');
+  function paintOpts(){
+    qBtn.setAttribute('aria-pressed', String(opts.q));
+    qBtn.textContent = 'リズム補正 ' + (opts.q ? 'ON' : 'OFF');
+    windBtn.dataset.on = opts.wind ? '1' : '0';
+    windBtn.textContent = '風: ' + WIND_NAMES[opts.wind];
+    windBtn.setAttribute('aria-label', '風の強さ: ' + WIND_NAMES[opts.wind] + '(おすと切りかえ)');
+  }
+  qBtn.addEventListener('click', () => {
+    opts.q = !opts.q; saveOpts(); paintOpts();
+    optMsg.textContent = opts.q
+      ? 'リズム補正ON: 音を8分音符(約' + recStepSec().toFixed(2) + '秒ごと)のタイミングにそろえて鳴らすよ。きろくも同じ拍に入る。'
+      : 'リズム補正OFF: ぶつかった瞬間に鳴るよ。';
+  });
+  windBtn.addEventListener('click', () => {
+    opts.wind = (opts.wind + 1) % 4; wind.reset(); saveOpts(); paintOpts();
+    optMsg.textContent = '風: ' + WIND_NAMES[opts.wind] + '。' + WIND_TIPS[opts.wind];
+  });
+
+  /* ---------- 設計モード: 板とペグを置く ---------- */
+  /* 板は、なぞった2点をつなぐ。丸い端をドラッグで角度を変える。ペグはタップで置いて、ドラッグで動かす。
+     配置は、この端末のブラウザに自動で覚えておく(曲コードとは別)。 */
+  const RIG_KEY = 'kudamono-gakudan-rig-v1';
+  function saveRig(){ try { localStorage.setItem(RIG_KEY, JSON.stringify(world.getLayout())); } catch (e) {} }
+  const rigStr = () => JSON.stringify(world.getLayout());
+  let rigSnap = null;                       // ひとつ前の配置(「元に戻す」用)
+  function commitRig(pre){                  // 配置が変わっていたら、ひとつ前を覚えて保存する
+    if (rigStr() !== pre) { rigSnap = pre; $('dundo').disabled = false; }
+    saveRig();
+  }
+  try { const L = JSON.parse(localStorage.getItem(RIG_KEY) || 'null'); if (L) world.setLayout(L); } catch (e) {}
+
+  const dcountEl = $('dcount'), dmsgEl = $('dmsg'), dtoolBtns = Array.from(document.querySelectorAll('.dtool'));
+  const D_TIPS = {
+    board: ['板: 好きな場所から、ななめにドラッグすると板ができます。板の丸い端をドラッグすると、角度を変えられます。',
+            '板: ドラッグで置く。丸い端をドラッグで角度を変えるよ。'],
+    peg: ['ペグ: 置きたい場所をタップ。置いたペグはドラッグで動かせます。',
+          'ペグ: タップで置く。ドラッグで動かせるよ。'],
+    erase: ['どける: 消したい板かペグをタップします。', 'どける: 板かペグをタップで消すよ。'],
+  };
+  let dmsgTimer = null;
+  const dTip = () => D_TIPS[dtool][isNarrow() ? 1 : 0];
+  function dSay(msg){ dmsgEl.textContent = msg; clearTimeout(dmsgTimer); dmsgTimer = setTimeout(() => { dmsgTimer = null; dmsgEl.textContent = dTip(); }, 2800); }
+  function paintDesign(){
+    dtoolBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.d === dtool)));
+    const L = world.limits;
+    dcountEl.textContent = '板 ' + world.boards.length + '/' + L.maxB + '・ペグ ' + world.pegs.length + '/' + L.maxP;
+    if (!dmsgTimer) dmsgEl.textContent = dTip();
+    rigOut.value = encodeRig(world.getLayout());
+    $('dundo').disabled = !rigSnap;
+  }
+  dtoolBtns.forEach(b => b.addEventListener('click', () => { dtool = b.dataset.d; clearTimeout(dmsgTimer); dmsgTimer = null; paintDesign(); }));
+
+  const ptr = (e) => { const r = stage.getBoundingClientRect(); return {x:(e.clientX - r.left) / r.width * BW, y:(e.clientY - r.top) / r.height * BH}; };
+  // 指でさわる場所の当たり判定は、見た目より大きめ(論理座標 22 ≒ スマホで約 24px)
+  function dHit(p, body){
+    let best = null, bd = 22*22;
+    world.boards.forEach((b, i) => {
+      const d1 = (p.x - b.x1)**2 + (p.y - b.y1)**2, d2 = (p.x - b.x2)**2 + (p.y - b.y2)**2;
+      if (d1 < bd) { bd = d1; best = {kind:'end', i, end:1}; }
+      if (d2 < bd) { bd = d2; best = {kind:'end', i, end:2}; }
+    });
+    if (best) return best;
+    bd = 1e9;
+    world.pegs.forEach((q, i) => { const d = Math.hypot(p.x - q.x, p.y - q.y) - q.r; if (d < 14 && d < bd) { bd = d; best = {kind:'peg', i}; } });
+    if (best || !body) return best;
+    world.boards.forEach((b, i) => {
+      const dx = b.x2 - b.x1, dy = b.y2 - b.y1, l2 = dx*dx + dy*dy;
+      let t = l2 ? ((p.x - b.x1)*dx + (p.y - b.y1)*dy) / l2 : 0; t = Math.max(0, Math.min(1, t));
+      const d = Math.hypot(p.x - (b.x1 + dx*t), p.y - (b.y1 + dy*t)) - world.thick;
+      if (d < 14 && d < bd) { bd = d; best = {kind:'board', i}; }
+    });
+    return best;
+  }
+  stage.addEventListener('pointerdown', (e) => {
+    if (mode !== 'design' || (e.pointerType === 'mouse' && e.button !== 0) || drag) return;
+    e.preventDefault();
+    const p = ptr(e), L = world.limits, pre = JSON.stringify(world.getLayout());
+    if (dtool === 'erase') {
+      const h = dHit(p, true);
+      if (!h) { dSay('消したい板かペグの上をタップしてね。'); return; }
+      if (h.kind === 'peg') world.removePeg(h.i); else world.removeBoard(h.i);   // 端の丸をさわったときは、その板を消す
+      for (let i = 0; i < flashAt.length; i++) flashAt[i] = 0;
+      commitRig(pre); paintDesign(); return;
+    }
+    const h = dHit(p, false);
+    if (h && h.kind === 'end') drag = {type:'end', i:h.i, end:h.end};
+    else if (h && h.kind === 'peg') drag = {type:'peg', i:h.i};
+    else if (dtool === 'peg') {
+      const i = world.addPeg(p.x, p.y);
+      if (i < 0) { dSay('ペグは' + L.maxP + '個までだよ。「どける」で減らしてね。'); return; }
+      drag = {type:'peg', i};
+    } else {
+      if (world.boards.length >= L.maxB) { dSay('板は' + L.maxB + '枚までだよ。「どける」で減らしてね。'); return; }
+      drag = {type:'new', x0:p.x, y0:p.y, x1:p.x, y1:p.y};
+    }
+    drag.id = e.pointerId; drag.pre = pre;
+    try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+    paintDesign();
+  });
+  stage.addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const p = ptr(e);
+    if (drag.type === 'end') world.moveEnd(drag.i, drag.end, p.x, p.y);
+    else if (drag.type === 'peg') world.movePeg(drag.i, p.x, p.y);
+    else { drag.x1 = p.x; drag.y1 = p.y; }
+  });
+  function dragEnd(e){
+    if (!drag || e.pointerId !== drag.id) return;
+    const d = drag; drag = null;
+    if (d.type === 'new' && e.type === 'pointerup') {
+      if (world.addBoard(d.x0, d.y0, d.x1, d.y1) === null) dSay('もう少し長くドラッグしてね。');
+    }
+    commitRig(d.pre); paintDesign();
+  }
+  stage.addEventListener('pointerup', dragEnd);
+  stage.addEventListener('pointercancel', dragEnd);
+  $('dreset').addEventListener('click', () => { const pre = rigStr(); world.resetLayout(); commitRig(pre); paintDesign(); dSay('はじめの配置にもどしました。'); });
+  $('dclear').addEventListener('click', () => { const pre = rigStr(); world.emptyLayout(); commitRig(pre); paintDesign(); dSay('板とペグを、ぜんぶどけました。'); });
+  $('dundo').addEventListener('click', () => {
+    if (!rigSnap) return;
+    try { world.setLayout(JSON.parse(rigSnap)); } catch (e) {}
+    rigSnap = null; saveRig(); paintDesign(); dSay('ひとつ前の配置に戻しました。');
+  });
+
+  /* ---------- 装置コード: 板とペグの配置を文字にする ---------- */
+  /* KR1:板;板;…|ペグ;ペグ;…   板は x1,y1,x2,y2(整数)、ペグは x,y。曲コード(KG)とは別もの。
+     例: KR1:0,115,236,164;360,231,124,280|300,176;60,305   読み込むときは形・数・長さをすべて確かめてから置きかえる。 */
+  function encodeRig(L){
+    return 'KR1:' + L.boards.map(b => [b.x1, b.y1, b.x2, b.y2].join(',')).join(';') + '|' + L.pegs.map(q => q.x + ',' + q.y).join(';');
+  }
+  function decodeRig(str){
+    const t = String(str).normalize('NFKC').replace(/\s+/g, '');
+    const m = /^KR1:([0-9,;]*)\|([0-9,;]*)$/.exec(t);
+    if (!m) return null;
+    const L = {boards:[], pegs:[]};
+    for (const part of m[1].split(';').filter(Boolean)) {
+      const a = part.split(',');
+      if (a.length !== 4 || !a.every(v => /^\d{1,3}$/.test(v))) return null;
+      L.boards.push({x1:+a[0], y1:+a[1], x2:+a[2], y2:+a[3]});
+    }
+    for (const part of m[2].split(';').filter(Boolean)) {
+      const a = part.split(',');
+      if (a.length !== 2 || !a.every(v => /^\d{1,3}$/.test(v))) return null;
+      L.pegs.push({x:+a[0], y:+a[1]});
+    }
+    const tmp = makeWorld();                  // 仮の世界で確かめる(上限・短すぎる板は、ここではじく)
+    if (!tmp.setLayout(L) || tmp.boards.length !== L.boards.length) return null;
+    return tmp.getLayout();
+  }
+
+  const RIGS_KEY = 'kudamono-gakudan-rigs-v1', MAX_RIGS = 12;
+  const rigNameEl = $('rigname'), rigListEl = $('riglist'), rigMsgEl = $('rigmsg'), rigOut = $('rigout'), rigIn = $('rigin'), rigCodeMsg = $('rigcodemsg');
+  function readRigs(){
+    try {
+      const a = JSON.parse(localStorage.getItem(RIGS_KEY) || '[]');
+      return Array.isArray(a) ? a.filter(x => x && typeof x.id === 'string' && typeof x.name === 'string' && decodeRig(x.code)) : [];
+    } catch (e) { return []; }
+  }
+  function writeRigs(a){ try { localStorage.setItem(RIGS_KEY, JSON.stringify(a)); return true; } catch (e) { return false; } }
+  let rigDelArm = null, rigDelTimer = null;
+  function renderRigs(){
+    if (!storageOk) {
+      rigListEl.innerHTML = '';
+      rigMsgEl.textContent = 'この表示では端末への保存ができません。右の装置コードをコピーして控えてください。';
+      return;
+    }
+    const a = readRigs();
+    if (!a.length) { rigListEl.innerHTML = '<li class="empty">まだありません。名前をつけて「保存」すると、ここに並びます。</li>'; return; }
+    rigListEl.innerHTML = a.map(x => {
+      const d = decodeRig(x.code), armed = rigDelArm === x.id;
+      return '<li><span class="nm" title="' + esc(x.name) + '">' + esc(x.name) + '</span><span class="meta">板' + d.boards.length + '・ペグ' + d.pegs.length + '</span>' +
+        '<button type="button" class="btn sm" data-act="open" data-id="' + esc(x.id) + '">ひらく</button>' +
+        '<button type="button" class="btn sm' + (armed ? ' danger' : '') + '" data-act="del" data-id="' + esc(x.id) + '">' + (armed ? '本当に?' : '消す') + '</button></li>';
+    }).join('');
+  }
+  function applyRig(L){ const pre = rigStr(); world.setLayout(L); commitRig(pre); paintDesign(); }
+  function saveRigNamed(){
+    if (!storageOk) { rigMsgEl.textContent = 'この表示では保存できません。装置コードで控えてね。'; return; }
+    const a = readRigs();
+    let name = rigNameEl.value.trim().slice(0, 20);
+    if (!name) name = '装置' + (a.length + 1);
+    const code = encodeRig(world.getLayout());
+    const same = a.find(x => x.name === name);
+    if (same) { same.code = code; rigMsgEl.textContent = '「' + name + '」を上書きしました。'; }
+    else {
+      if (a.length >= MAX_RIGS) { rigMsgEl.textContent = '保存できるのは' + MAX_RIGS + '個までです。いらない装置を消してね。'; return; }
+      a.unshift({id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, code});
+      rigMsgEl.textContent = '「' + name + '」を保存しました。';
+    }
+    if (!writeRigs(a)) rigMsgEl.textContent = '保存に失敗しました。装置コードで控えてね。';
+    rigNameEl.value = '';
+    renderRigs();
+  }
+  rigListEl.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-act]'); if (!b) return;
+    const a = readRigs(), x = a.find(r => r.id === b.dataset.id); if (!x) return;
+    if (b.dataset.act === 'open') {
+      const L = decodeRig(x.code); if (!L) return;
+      applyRig(L);
+      rigMsgEl.textContent = '「' + x.name + '」をひらきました。「元に戻す」で前の配置に戻せます。';
+    } else if (rigDelArm === x.id) {
+      writeRigs(a.filter(r => r.id !== x.id)); rigDelArm = null; clearTimeout(rigDelTimer);
+      rigMsgEl.textContent = '「' + x.name + '」を消しました。';
+      renderRigs();
+    } else {
+      rigDelArm = x.id; clearTimeout(rigDelTimer);
+      rigDelTimer = setTimeout(() => { rigDelArm = null; renderRigs(); }, 3000);
+      renderRigs();
+    }
+  });
+  $('saverig').addEventListener('click', saveRigNamed);
+  rigNameEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveRigNamed(); });
+  /* ぶつける画面の「装置」えらび: 保存した装置と、はじめの配置を、すぐ切りかえる */
+  const pickRow = $('rigpickrow'), pickSel = $('rigpick');
+  const DEF_LAYOUT = makeWorld().getLayout(), DEF_CODE = encodeRig(DEF_LAYOUT);
+  const canon = (code) => { const L = decodeRig(code); return L ? encodeRig(L) : null; };
+  function refreshRigPick(){
+    const cur = encodeRig(world.getLayout()), a = storageOk ? readRigs() : [];
+    const hit = a.find(x => canon(x.code) === cur);
+    const sel = hit ? 'rig:' + hit.id : cur === DEF_CODE ? 'def' : 'cur';
+    let h = sel === 'cur' ? '<option value="cur">いまの配置(未保存)</option>' : '';
+    h += '<option value="def">はじめの配置</option>';
+    h += a.map(x => '<option value="rig:' + esc(x.id) + '">' + esc(x.name) + '</option>').join('');
+    pickSel.innerHTML = h; pickSel.value = sel;
+  }
+  function pickRig(v){
+    if (rec) return;
+    let L = null, name = '';
+    if (v === 'def') { L = DEF_LAYOUT; name = 'はじめの配置'; }
+    else if (v.startsWith('rig:')) { const x = readRigs().find(r => 'rig:' + r.id === v); if (x) { L = decodeRig(x.code); name = '「' + x.name + '」'; } }
+    if (!L) { refreshRigPick(); return; }
+    applyRig(L);
+    world.clear(); ripples.length = 0; jamAcc = 0; jamShown = false;       // 配置が変わるので、落ちている果物は片づける
+    for (let i = 0; i < flashAt.length; i++) flashAt[i] = 0;
+    refreshRigPick();
+    setHint('装置を' + name + 'にしました。果物は片づけたよ。', true);
+  }
+  pickSel.addEventListener('change', () => pickRig(pickSel.value));
+  function stepRig(dir){
+    const vals = Array.from(pickSel.options).map(o => o.value).filter(v => v !== 'cur');
+    if (!vals.length) return;
+    const i = vals.indexOf(pickSel.value);
+    pickRig(vals[i < 0 ? (dir > 0 ? 0 : vals.length - 1) : (i + dir + vals.length) % vals.length]);
+  }
+  $('rigprev').addEventListener('click', () => stepRig(-1));
+  $('rignext').addEventListener('click', () => stepRig(1));
+
+  $('copyrig').addEventListener('click', () => {
+    rigOut.value = encodeRig(world.getLayout());
+    const done = () => { rigCodeMsg.textContent = 'コピーしました。'; };
+    const fallback = () => { rigOut.focus(); rigOut.select(); rigCodeMsg.textContent = '選択しました。コピーしてください。'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(rigOut.value).then(done, fallback);
+    else fallback();
+  });
+  $('loadrig').addEventListener('click', () => {
+    const L = decodeRig(rigIn.value);
+    if (!L) { rigCodeMsg.textContent = '装置コードの形が違うようです。KR1: で始まるコードを貼ってください。(板は6枚・ペグは8個まで、板は短すぎないこと)'; return; }
+    applyRig(L); rigIn.value = '';
+    rigCodeMsg.textContent = '読み込みました。「元に戻す」で前の配置に戻せます。';
+  });
+
+  /* ---------- あそびかたの切り替え ---------- */
+  const transportEl = $('transport'), tbtnsEl = $('tbtns'), songsEl = $('songs'), arenaEl = $('arena');
+  const MODE_IDS = {shelf:'mode-shelf', bounce:'mode-bounce', design:'mode-design'};
+  function setMode(m){
+    if (m === mode) return;
+    if (playing) stop();
+    if (rec) recCancel();
+    drag = null;
+    mode = m;
+    Object.keys(MODE_IDS).forEach(k => $(MODE_IDS[k]).setAttribute('aria-pressed', String(k === m)));
+    const b = m !== 'shelf', d = m === 'design';
+    // ぶつけるモードでは再生ボタンなどを隠し、テンポだけ残す(きろくのテンポに使う)。設計モードではテンポも要らない。
+    playBtn.hidden = b; tbtnsEl.hidden = b; transportEl.classList.toggle('tempo-only', b); transportEl.hidden = d;
+    shelvesEl.hidden = b; songsEl.hidden = b; arenaEl.hidden = !b;
+    $('trayset').hidden = d; $('mixer').hidden = d; $('dbar').hidden = !d;
+    $('playctl').hidden = d; $('dacts').hidden = !d; $('rigs').hidden = !d;
+    stage.classList.toggle('designing', d);
+    stage.setAttribute('aria-label', d ? '板とペグを置く設計の画面。ドラッグで板、タップでペグを置けます。' : '果物が落ちて転がる遊び場。タップした場所から果物が落ちます。');
+    if (d) { world.clear(); ripples.length = 0; jamAcc = 0; jamShown = false; clearTimeout(dmsgTimer); dmsgTimer = null; paintDesign(); }   // 設計中は、落ちている果物をいったん片づける
+    $('rigpickrow').hidden = d;
+    if (m === 'bounce') refreshRigPick();
+    if (b) { if (!bRun) bounceStart(); updateRecHint(); } else bounceStop();
+    setHint(toolTip());
+  }
+  $('mode-shelf').addEventListener('click', () => setMode('shelf'));
+  $('mode-bounce').addEventListener('click', () => setMode('bounce'));
+  $('mode-design').addEventListener('click', () => setMode('design'));
+
+  buildMixer();
+  paintOpts();
+  paintAll();
+  setTool(tool);
+  updateCode(); renderSongs(); renderRigs();
+})();
+</script>
+
+
+</body>
+</html>
