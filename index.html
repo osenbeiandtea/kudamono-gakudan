@@ -1,13 +1,4 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>果物楽団</title>
-<link rel="icon" href="favicon.ico" sizes="48x48">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiNGRkU3QzciLz4KICA8cGF0aCBkPSJNMzIgMjNjLTYtNC41LTE4LTItMTggMTQgMCAxMSA4IDE5IDE0IDE5IDMgMCAzLTEuMiA0LTEuMnMxIDEuMiA0IDEuMmM2IDAgMTQtOCAxNC0xOSAwLTE2LTEyLTE4LjUwMC0xOC0xNHoiIGZpbGw9IiNFMjM4NEQiLz4KICA8cGF0aCBkPSJNMzMgMjIuNTAwYzAtNi41MDAgNC41MDAtMTAuNTAwIDExLTExLjUwMC0xIDYuNTAwLTQuNTAwIDEwLjUwMC0xMSAxMS41MDB6IiBmaWxsPSIjNEZBMDVBIi8+CiAgPHBhdGggZD0iTTMyIDIzLjUwMGMwLTQtMS03LTMtOS41MDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzdBNEEyQSIgc3Ryb2tlLXdpZHRoPSIyLjYwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGVsbGlwc2UgY3g9IjI3LjUwMCIgY3k9IjQ1IiByeD0iNSIgcnk9IjQiIHRyYW5zZm9ybT0icm90YXRlKC0xOCAyNy41MDAgNDUpIiBmaWxsPSIjZmZmIi8+CiAgPHBhdGggZD0iTTMxLjgwMCA0NFYzMS41MDBxOC41MDAgMSA4LjUwMCA4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=">
-<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADxElEQVR4nMRXWWgTWxj+zmSyd0331tp6ufeq13vLLd4rqagoIqlFQSiIPrgiIn0QFHzRF5/EB0EQRcEVfBB8cEGlpbaoVbRaqXWpdasL1aaNtk1tmklNJuM/o0YH25Np0PhBEs75l+875/z/mYyIb6AM3MlAaGQTlKgbDP8CLBc/BIoPCtrAhGbYrLtZZrn/i4XFXLw3FtL3IZoqxE+F0k0c61hBRW1MgNJ93QPG6pBcVKkimOK/mgnJ1E5aCpBU0E448I+AoGlV8slV0FEPY6VAW+/GD8S7UACNbzqMORO3QFsxbgGRcBinjh2FNByIzfUT8Z4HDVjfdAzXvE8MZlLcIskowTghyxHcu9kCZ2oaPNXV6Ar0Y0vzSYTksGafnlNqMBMrEZAArDY7Zld6cP1iPQb9A9jb3hgjd9mcWFD0l+FcCQlQMdvjQTSq4PLNq3js79HmUsxWbC7zwCqaDecRDXtGowjeeIRw1zuY0p2wTMqDKycH3b1eZBXaMSOcgUVvXch8OAhUUFMJxtbG6AZU4jmN3H2B/oP1iLzp083XFwzCbBIx97WDbjT2dVUTsuDasBDWaRPjpY4vQCX3bT8xqs1nCkGg6Oyo7Xsj7UDejhWwTC4CD/x9kmX07a8d05wr20YnV0FH1q/GKkriAoavtEPu9SNRhF/5IN1+xvXhFqHU8pRnRvbOrbBM+R0j9zsQOF2LkdYH3/mEWjth//+PMXNwd+BDp5dnhnlSMZhF1ETk7tuB9JpVo+To4ebgCoi+l8AFYwi13IN3WQ0CZ+qQtqIa1v/KdC5y33skLECJRGAIVKwDuw5A7vEhZUml3jQkJS5AcNrBhVrhX6pcjlLLdsBcWqzP4bBxU3CL0JSTSscQ1AcU5SNl6WKY6ZfZ9QIHD5+AOFHf92JuGhIWYJtWgnBnb2zsmD8LWds3U9TnMOp1iKaYPdLVrX10OcpKeRT8I3C4J+vG1vK/v5Jr0QKkpmZwc8ycioQFWKYW072eHRtHXuvbcvh8A4L1TZz4CTD/lg8e4j4NXTVV8G07rhXb0MlzVBgC7O7pCFxoRLDu0tiB5OdaXxkvvfYwUm+KPJ7T0Llb8B9pwHjg2rgIznll8dx6BVpZWzyv1MUzkLZ0FgyBVp6xZr4RcnVX20S6zVQBnni+6cvnwFExBUNnmyG1Ptfa005jFRL9UTFlpdCd/6cmVix0wRCIWz2CUlJyhwYZSCYUxU+c5QK9Hr2k4VokG4KwWuXW2pAVzjxNP1WfXhx/NjSOKpbvPqtx60y/4PX8IwAAAP//fwgdnAAAAAZJREFUAwCAelCf2FbjUgAAAABJRU5ErkJggg==">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>果物楽団</title><link rel="icon" href="favicon.ico" sizes="48x48"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -191,6 +182,20 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
 .rigpick.off{opacity:.45; pointer-events:none}
 .vh{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 
+/* つなぎ(長い音): 先頭の果物から右へ、帯がのびる */
+.tool[hidden]{display:none}
+.tool.t-tie{--fc:var(--ink)}
+.tb{display:none}
+.cell.tie-h{isolation:isolate; z-index:1}
+.cell.tie-h .tb{
+  display:block; position:absolute; left:0; top:0; bottom:0; z-index:-1; pointer-events:none; border-radius:10px;
+  width:calc(var(--len) * 100% + (var(--len) - 1) * 4px);
+  background:color-mix(in srgb,var(--fc) 24%,var(--cell)); box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--fc) 65%,transparent);
+}
+.cell.tie-h.ice .tb{background:var(--ice-bg); box-shadow:inset 0 0 0 1.5px var(--ice-edge)}
+.cell.tie-h.ripe .tb{background:var(--ripe-bg); box-shadow:inset 0 0 0 1.5px var(--ripe-edge)}
+.cell.tie-h.tnow .tb{box-shadow:inset 0 0 0 2.5px var(--accent)}
+
 /* 設計モード(板とペグを置く) */
 .contents{display:contents}
 .dbar{display:grid; gap:8px}
@@ -239,7 +244,7 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   .transport.tempo-only .tempo{grid-column:1/-1}
   .tbtns{grid-column:1/-1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
   .tbtns .btn{justify-content:center; padding-inline:4px; font-size:14px}
-  .tray{grid-template-columns:repeat(9,minmax(0,1fr)); gap:3px}
+  .tray{grid-template-columns:repeat(var(--tn,9),minmax(0,1fr)); gap:3px}
   .lf{display:none}
   .ls{display:inline}
   .tool{padding:5px 1px 4px; border-radius:12px; gap:0}
@@ -251,15 +256,11 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   .mixer>summary{min-height:44px}
 }
 @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
-</style>
-<style>:root{color-scheme:light dark}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]:not([hidden=until-found i]){display:none!important}</style>
-</head>
-<body>
-
+</style><style>:root{color-scheme:light dark}body{margin:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}[hidden]{display:none!important}</style></head><body>
 
 <main class="app">
   <header>
-    <h1>果物楽団<span class="ver">v2.5.2</span></h1>
+    <h1>果物楽団<span class="ver">v2.6</span></h1>
     <p class="sub">果物を並べて曲にする。ぶつけた音も曲にできる。</p>
   </header>
 
@@ -413,8 +414,8 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
 
   const DEMO = [
     ['wm',    [[0,4],[4,3],[8,0],[12,2]]],
-    ['apple', [[2,3],[6,3],[10,3],[14,2]]],
-    ['banana',[[0,2],[2,1],[3,0],[4,1],[6,2],[8,2],[10,1],[11,0],[12,1],[14,3]]],
+    ['apple', [[2,3],[6,3,0,2],[10,3],[14,2]]],
+    ['banana',[[0,2],[2,1],[3,0],[4,1],[6,2],[8,2],[10,1],[11,0],[12,1],[14,3,0,2]]],
     ['grapes',[[1,4],[5,3],[9,4],[13,3]]],
     ['straw', [[5,0],[9,1],[13,0,1]]],
     ['lemon', [[7,0],[11,2,1],[15,1]]],
@@ -423,7 +424,28 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   const emptyGrid = () => Array.from({length:STEPS}, () => Array(ROWS).fill(null));
   function demoGrid(){
     const g = emptyGrid();
-    DEMO.forEach(([f, cells]) => cells.forEach(([s,r,ice]) => { g[s][r] = {f, ice: !!ice}; }));
+    DEMO.forEach(([f, cells]) => cells.forEach(([s,r,ice,len]) => { g[s][r] = {f, ice: !!ice}; if (len > 1) g[s][r].len = len; }));
+    return g;
+  }
+  /* つなぎ(長い音): 先頭の果物が len(2〜4)を持ち、続きのマスは空のまま「覆われている」とみなす。
+     つなげるのは同じ段の右どなりだけで、最大 MAXLEN マス(2拍)。曲の最後(16マス目)をこえてはつなげない。 */
+  const MAXLEN = 4;
+  const lenOf = (c) => (c && c.len > 1 ? c.len : 1);
+  function tieHead(g, s, r){          // 覆われているマス(つながった2マス目以降)なら先頭のstep、そうでなければ -1
+    for (let j = 1; j < MAXLEN && s - j >= 0; j++) {
+      const h = g[s - j][r];
+      if (h) return lenOf(h) > j ? s - j : -1;
+    }
+    return -1;
+  }
+  function normalizeTies(g){          // 長さを、範囲(1〜4)・曲の終わり・次の果物の手前におさめる
+    for (let r = 0; r < ROWS; r++) for (let s = 0; s < STEPS; s++) {
+      const c = g[s][r]; if (!c) continue;
+      let len = Math.floor(Number(c.len)); if (!(len >= 1)) len = 1;
+      len = Math.min(len, MAXLEN, STEPS - s);
+      for (let k = 1; k < len; k++) if (g[s + k][r]) { len = k; break; }
+      if (len > 1) c.len = len; else delete c.len;
+    }
     return g;
   }
   let grid = demoGrid();
@@ -437,8 +459,8 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Array.isArray(saved.g) && saved.g.length === STEPS &&
         saved.g.every(col => Array.isArray(col) && col.length === ROWS &&
-          col.every(c => c === null || (c && FR[c.f] && typeof c.ice === 'boolean' && (c.ripe === undefined || typeof c.ripe === 'boolean'))))) {
-      grid = saved.g;
+          col.every(c => c === null || (c && FR[c.f] && typeof c.ice === 'boolean' && (c.ripe === undefined || typeof c.ripe === 'boolean') && (c.len === undefined || (Number.isInteger(c.len) && c.len >= 1 && c.len <= MAXLEN)))))) {
+      grid = normalizeTies(saved.g);
       if (saved.b >= 60 && saved.b <= 180) bpm = saved.b;
     }
   } catch (e) {}
@@ -467,12 +489,15 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   const ICE_SVG = '<svg viewBox="0 0 12 12" fill="none" stroke="#4C9DEB" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><path d="M6 1v10M1.7 3.5l8.6 5M1.7 8.5l8.6-5"/></svg>';
   const ERASE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const RIPE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#B9803F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12.5" r="8"/><circle cx="9" cy="10.5" r="1.3" fill="#B9803F" stroke="none"/><circle cx="14.5" cy="13.5" r="1.3" fill="#B9803F" stroke="none"/><circle cx="10.5" cy="16.5" r="1.1" fill="#B9803F" stroke="none"/></svg>';
+  const TIE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/><circle cx="5" cy="12" r="2.4" fill="currentColor"/><circle cx="19" cy="12" r="2.4" fill="currentColor"/></svg>';
   const TIPS = {
+    tie: 'つなぐ: 果物の右どなりの空きマスをタップすると、音がつながって長くなります(最大4マス)。つながったマスをタップすると、そこで切れます。',
     ice: '凍らせる: 置いた果物をタップすると凍って、1オクターブ高い硬い音になります。もう一度タップで戻ります。',
     ripe: '熟成: 置いた果物をタップすると熟して、1オクターブ下のまるい音になります。りんごは低くなりすぎるので、高さはそのままで音色だけまるくなります。もう一度タップで戻ります。',
     erase: 'どける: 果物をタップして棚から外します。',
   };
   const TIPS_N = {
+    tie: 'つなぐ: 果物の右どなりの空きマスをタップで、音が長くなる(最大4マス)。つながった所をタップで切れる。',
     ice: '凍らせる: 置いた果物をタップで凍る(1オクターブ上の硬い音)。もう一度で戻る。',
     ripe: '熟成: 置いた果物をタップで熟す(1オクターブ下のまるい音)。もう一度で戻る。',
   };
@@ -482,8 +507,10 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   ).join('') +
     `<button type="button" class="tool t-ice" data-id="ice" aria-pressed="false"><span class="em">${ICE_SVG}</span><b><span class="lf">凍らせる</span><span class="ls">凍結</span></b><small>1オクターブ上</small></button>` +
     `<button type="button" class="tool t-ripe" data-id="ripe" aria-pressed="false"><span class="em">${RIPE_SVG}</span><b><span class="lf">熟成させる</span><span class="ls">熟成</span></b><small>1オクターブ下</small></button>` +
+    `<button type="button" class="tool t-tie" data-id="tie" aria-pressed="false"><span class="em">${TIE_SVG}</span><b>つなぐ</b><small>長い音に</small></button>` +
     `<button type="button" class="tool" data-id="erase" aria-pressed="false"><span class="em">${ERASE_SVG}</span><b>どける</b><small>棚から外す</small></button>`;
 
+  trayEl.style.setProperty('--tn', 10);   // 棚モードのトレイは10こ(ぶつけるモードは「つなぐ」を隠して9こ)
   const cellsEl = Array.from({length:STEPS}, () => Array(ROWS));
   for (let b = 0; b < 2; b++) {
     const sec = document.createElement('section');
@@ -495,7 +522,7 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
       html += `<span class="note" aria-hidden="true">${NOTE[r]}</span>`;
       for (let c = 0; c < 8; c++) {
         const s = b*8 + c;
-        html += `<button type="button" class="cell${s%2===0?' down':''}" data-s="${s}" data-r="${r}"><span class="fr"></span></button>`;
+        html += `<button type="button" class="cell${s%2===0?' down':''}" data-s="${s}" data-r="${r}"><span class="fr"></span><span class="tb" aria-hidden="true"></span></button>`;
       }
     }
     html += '</div>';
@@ -505,15 +532,19 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   shelvesEl.querySelectorAll('.cell').forEach(el => { cellsEl[+el.dataset.s][+el.dataset.r] = el; });
 
   function paintCell(s, r){
-    const c = grid[s][r], el = cellsEl[s][r];
+    const c = grid[s][r], el = cellsEl[s][r], hs = c ? -1 : tieHead(grid, s, r), L = lenOf(c);
     const bar = Math.floor(s/8) + 1, beat = Math.floor((s%8)/2) + 1, back = s%2 ? 'の裏' : '';
+    el.classList.toggle('tie-h', L > 1);
+    el.classList.toggle('tie-c', hs >= 0);
+    if (L > 1) el.style.setProperty('--len', L); else el.style.removeProperty('--len');
     el.classList.toggle('on', !!c);
     el.classList.toggle('ice', !!(c && c.ice));
     el.classList.toggle('ripe', !!(c && c.ripe));
     ORDER.forEach(id => el.classList.toggle('f-'+id, !!(c && c.f === id)));
     el.firstElementChild.textContent = c ? FR[c.f].em : '';
-    el.setAttribute('aria-label', `${bar}小節目 ${beat}拍${back} ${NOTE[r]}、` + (c ? `${FR[c.f].name}${c.ice ? '(凍っている)' : c.ripe ? '(熟している)' : ''}` : '空き'));
+    el.setAttribute('aria-label', `${bar}小節目 ${beat}拍${back} ${NOTE[r]}、` + (c ? `${FR[c.f].name}${c.ice ? '(凍っている)' : c.ripe ? '(熟している)' : ''}${L > 1 ? `、${L}マスぶん長くのばす` : ''}` : hs >= 0 ? `${FR[grid[hs][r].f].name}の音の続き(つながっている)` : '空き'));
   }
+  function paintRow(r){ for (let s = 0; s < STEPS; s++) paintCell(s, r); }
   function paintAll(){ for (let s = 0; s < STEPS; s++) for (let r = 0; r < ROWS; r++) paintCell(s, r); }
 
   /* ---------- 音 ---------- */
@@ -557,6 +588,7 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
     return true;
   }
   const stepDur = () => mode === 'bounce' ? 0.29 : 60 / bpm / 2;
+  let HOLD = 0;   // つながった音の、のばすぶん(秒)。voice()が音を鳴らす間だけ設定する
 
   function applyMix(now){
     if (!ctx) return;
@@ -566,9 +598,11 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
     ORDER.forEach(id => { set(fbus[id].g.gain, mix.v[id] / 100); set(fbus[id].sh.gain, mix.t[id]); });
   }
   // 果物ごとの通り道に音を流す(音の関数はその場で配線するので、busを差し替えれば足りる)
-  function voice(fid, t, f, v, ice, ripe){
+  function voice(fid, t, f, v, ice, ripe, hold){
     bus = ripe ? rbus[fid] : fbus[fid].g;
+    HOLD = hold > 0 ? hold : 0;
     VOICE[fid](t, f, v, ice);
+    HOLD = 0;
   }
 
   function envG(t, peak, att, dec){
@@ -597,17 +631,17 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   // スイカ: 低いボンゴ(凍ると高いボンゴ)
   function vWm(t, f, v, ice){
     const k = ice ? 0.6 : 1;
-    const {o} = tone('sine', f*1.4, t, 0.95*v, 0.002, 0.24*k);
+    const {o} = tone('sine', f*1.4, t, 0.95*v, 0.002, 0.24*k + HOLD*0.5);
     o.frequency.exponentialRampToValueAtTime(f, t + 0.035);
-    tone('sine', f*1.59, t, 0.3*v, 0.002, 0.1*k);    // 膜の倍音
+    tone('sine', f*1.59, t, 0.3*v, 0.002, 0.1*k + HOLD*0.25);    // 膜の倍音
     tone('sine', f*2.14, t, 0.12*v, 0.002, 0.06*k);
-    tone('sine', f*0.5, t, 0.2*v, 0.002, 0.1);       // 胴の鳴り
+    tone('sine', f*0.5, t, 0.2*v, 0.002, 0.1 + HOLD*0.5);       // 胴の鳴り
     noiseBurst(t, 0.035, 'bandpass', ice ? 3200 : 1800, 0.55*v, 1.4);  // 手のひらのスラップ
     noiseBurst(t, 0.012, 'highpass', 5000, 0.15*v);
   }
   // りんご: ユーフォニアム(凍るとミュートをつけたような明るい音)
   function vApple(t, f, v, ice){
-    const dur = Math.min(stepDur() * (ice ? 1.0 : 1.7), 0.7);
+    const dur = Math.min(stepDur() * (ice ? 1.0 : 1.7), 0.7) + HOLD;
     const att = ice ? 0.02 : 0.055;
     const peak = 0.55*v;
     const g = ctx.createGain();
@@ -638,7 +672,7 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   }
   // バナナ: フルート
   function vBanana(t, f, v, ice){
-    const dur = Math.min(stepDur() * (ice ? 1.1 : 1.8), 0.75);
+    const dur = Math.min(stepDur() * (ice ? 1.1 : 1.8), 0.75) + HOLD;
     const peak = 0.5*v;
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.0001, t);
@@ -664,9 +698,9 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   }
   // ぶどう: 粒がポロロン
   function marimba(t, f, v, ice){
-    tone('sine', f, t, 0.7*v, 0.002, ice ? 0.28 : 0.55);
-    tone('sine', f*4, t, 0.2*v, 0.002, 0.09);
-    if (ice) tone('sine', f*6.3, t, 0.1*v, 0.002, 0.2);
+    tone('sine', f, t, 0.7*v, 0.002, (ice ? 0.28 : 0.55) + HOLD*0.9);
+    tone('sine', f*4, t, 0.2*v, 0.002, 0.09 + HOLD*0.15);
+    if (ice) tone('sine', f*6.3, t, 0.1*v, 0.002, 0.2 + HOLD*0.3);
     noiseBurst(t, 0.01, 'bandpass', f*4, 0.15*v);
   }
   function vGrapes(t, f, v, ice){
@@ -680,20 +714,20 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
     const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
     const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 2;
     lp.frequency.setValueAtTime(f*(ice ? 10 : 7), t);
-    lp.frequency.exponentialRampToValueAtTime(f*1.4, t + 0.18);
-    const dec = ice ? 0.22 : 0.38;
+    lp.frequency.exponentialRampToValueAtTime(f*1.4, t + 0.18 + HOLD*0.5);
+    const dec = (ice ? 0.22 : 0.38) + HOLD*0.7;
     const g = envG(t, 0.7*v, 0.002, dec);
     o.connect(lp); lp.connect(g); g.connect(bus);
     o.start(t); o.stop(t + dec + 0.06);
-    tone('sine', f*2, t, 0.18*v, 0.002, 0.12);
-    if (ice) tone('sine', f*5.04, t, 0.1*v, 0.002, 0.2);
+    tone('sine', f*2, t, 0.18*v, 0.002, 0.12 + HOLD*0.3);
+    if (ice) tone('sine', f*5.04, t, 0.1*v, 0.002, 0.2 + HOLD*0.4);
   }
   // レモン: チリン
   function vLemon(t, f, v, ice){
     const k = ice ? 0.7 : 1;
     [[1,1,1.7],[2.76,0.5,1.1],[5.4,0.24,0.65],[8.93,0.12,0.4]].forEach(([r,a,d], i) => {
       const fr = f*r; if (fr > 16000) return;
-      tone('sine', fr, t, a*0.5*v*(ice && i > 0 ? 1.5 : 1), 0.002, d*k);
+      tone('sine', fr, t, a*0.5*v*(ice && i > 0 ? 1.5 : 1), 0.002, d*k + HOLD*0.8/(i + 1));
     });
     noiseBurst(t, 0.015, 'highpass', ice ? 6000 : 4000, 0.12*v);
   }
@@ -701,11 +735,11 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
 
   // 熟成は1オクターブ下。ただし低すぎて小さなスピーカーでは聞こえない音(C2より下)になるときは、高さを変えない
   const ripeMidi = (m) => (m - 12 >= 36 ? m - 12 : m);
-  function playNote(c, r, t, v){
+  function playNote(c, r, t, v, hold){
     let m = FR[c.f].base + SCALE[4 - r] + (c.ice ? 12 : 0);
     if (c.ripe) m = ripeMidi(m);
     const f = 440 * Math.pow(2, (m - 69)/12);
-    voice(c.f, t, f, v * FR[c.f].trim * (c.ice ? 0.85 : c.ripe ? 0.95 : 1), c.ice, !!c.ripe);
+    voice(c.f, t, f, v * FR[c.f].trim * (c.ice ? 0.85 : c.ripe ? 0.95 : 1), c.ice, !!c.ripe, hold);
   }
 
   /* ---------- 動き ---------- */
@@ -726,7 +760,7 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   function playStepAudio(step, time){
     for (let r = 0; r < ROWS; r++) {
       const c = grid[step][r];
-      if (c) playNote(c, r, time, step % 4 === 0 ? 1 : 0.8);
+      if (c) playNote(c, r, time, step % 4 === 0 ? 1 : 0.8, (lenOf(c) - 1) * stepDur());
     }
   }
   function schedule(){
@@ -738,13 +772,15 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
     }
   }
   function showStep(s){
-    if (curStep >= 0) for (let r = 0; r < ROWS; r++) cellsEl[curStep][r].classList.remove('now');
+    if (curStep >= 0) for (let r = 0; r < ROWS; r++) { cellsEl[curStep][r].classList.remove('now'); for (let k = 0; k < STEPS; k++) cellsEl[k][r].classList.remove('tnow'); }
     curStep = s;
     if (s < 0) return;
     for (let r = 0; r < ROWS; r++) {
       const el = cellsEl[s][r];
       el.classList.add('now');
       if (grid[s][r]) plop(el.firstElementChild);
+      const hs = grid[s][r] ? s : tieHead(grid, s, r);        // つながった帯は、続きのマスを鳴らしている間も光らせる
+      if (hs >= 0 && lenOf(grid[hs][r]) > 1) cellsEl[hs][r].classList.add('tnow');
     }
   }
   function frame(){
@@ -822,35 +858,57 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   const undoBtn = $('undo');
   function takeSnap(){ snap = JSON.stringify(grid); undoBtn.disabled = false; }
 
+  const cutTie = (h, hs, s) => { h.len = s - hs; if (h.len < 2) delete h.len; };   // つながった音を、s のマスの手前で切る
   shelvesEl.addEventListener('click', (e) => {
     const el = e.target.closest('.cell'); if (!el) return;
     const s = +el.dataset.s, r = +el.dataset.r;
     const ok = initAudio();
-    const c = grid[s][r];
+    const c = grid[s][r], hs = c ? -1 : tieHead(grid, s, r);
+    const head = c || (hs >= 0 ? grid[hs][r] : null), hstep = c ? s : hs;   // 凍結・熟成・音の確かめは、つながった音の先頭に対して行う
+    const audition = (n) => { if (ok) playNote(n, r, ctx.currentTime + 0.01, 0.9, (lenOf(n) - 1) * stepDur()); };
     if (tool === 'erase') {
-      if (c) { grid[s][r] = null; paintCell(s, r); save(); }
+      if (c) grid[s][r] = null;                       // 先頭をどけると、つながりごと消える
+      else if (hs >= 0) cutTie(head, hs, s);          // 続きのマスをどけると、そこで切れる
+      else return;
+      paintRow(r); save();
+      return;
+    }
+    if (tool === 'tie') {
+      if (c) {
+        if (lenOf(c) > 1) { delete c.len; paintRow(r); save(); setHint('つなぎをはずしました。', true); }
+        else setHint('つなぐには、果物の右どなりの空きマスをタップしてね。', true);
+        return;
+      }
+      if (hs >= 0) { cutTie(head, hs, s); paintRow(r); save(); setHint('ここで切りました。', true); return; }
+      let j = 1, h = null;                            // 空きマス: 左どなりで終わっている音を、1マスのばす
+      while (j <= MAXLEN && s - j >= 0) { const x = grid[s - j][r]; if (x) { h = x; break; } j++; }
+      if (!h || lenOf(h) !== j) { setHint('つなぐには、果物の右どなりの空きマスをタップしてね。', true); return; }
+      if (j >= MAXLEN) { setHint('つなげるのは' + MAXLEN + 'マス(2拍)までだよ。', true); return; }
+      h.len = j + 1; paintRow(r); save();
+      audition(h); plop(cellsEl[s - j][r].firstElementChild);
       return;
     }
     if (tool === 'ice') {
-      if (!c) { setHint('凍らせるには、先に果物を置いてね。', true); return; }
-      c.ice = !c.ice; if (c.ice) c.ripe = false;
-      paintCell(s, r); save();
-      if (ok) playNote(c, r, ctx.currentTime + 0.01, 0.9);
-      plop(el.firstElementChild);
+      if (!head) { setHint('凍らせるには、先に果物を置いてね。', true); return; }
+      head.ice = !head.ice; if (head.ice) head.ripe = false;
+      paintRow(r); save();
+      audition(head); plop(cellsEl[hstep][r].firstElementChild);
       return;
     }
     if (tool === 'ripe') {
-      if (!c) { setHint('熟成させるには、先に果物を置いてね。', true); return; }
-      c.ripe = !c.ripe; if (c.ripe) c.ice = false;
-      paintCell(s, r); save();
-      if (ok) playNote(c, r, ctx.currentTime + 0.01, 0.9);
-      plop(el.firstElementChild);
+      if (!head) { setHint('熟成させるには、先に果物を置いてね。', true); return; }
+      head.ripe = !head.ripe; if (head.ripe) head.ice = false;
+      paintRow(r); save();
+      audition(head); plop(cellsEl[hstep][r].firstElementChild);
       return;
     }
-    if (c && c.f === tool) { grid[s][r] = null; paintCell(s, r); save(); return; }
+    if (c && c.f === tool) { grid[s][r] = null; paintRow(r); save(); return; }
+    if (hs >= 0) cutTie(head, hs, s);                 // つながった音の途中に置くと、そこで切れる
+    const keep = lenOf(c);                            // 別の果物に置きかえるときは、長さはそのまま
     grid[s][r] = {f:tool, ice:false, ripe:false};
-    paintCell(s, r); save();
-    if (ok) playNote(grid[s][r], r, ctx.currentTime + 0.01, 0.9);
+    if (keep > 1) grid[s][r].len = keep;
+    paintRow(r); save();
+    audition(grid[s][r]);
     plop(el.firstElementChild);
   });
 
@@ -876,25 +934,28 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   // 曲コード: 小文字=ふつう / 大文字=凍結 / 数字(1〜6)=熟成。熟成がない曲は、これまでと同じKG1のまま。
   const DIG = {wm:'1', apple:'2', banana:'3', grapes:'4', straw:'5', lemon:'6'};
   const UNDIG = {'1':'wm', '2':'apple', '3':'banana', '4':'grapes', '5':'straw', '6':'lemon'};
+  // KG3: つながった音の「続きのマス」を - で表す(例: 先頭が b で、続きが - )。つなぎがない曲は、これまでと同じKG1/KG2のまま。
   function encodeSong(g, b){
-    let out = '', anyRipe = false;
+    let out = '', anyRipe = false, anyTie = false;
     for (let i = 0; i < STEPS; i++) for (let r = 0; r < ROWS; r++) {
       const c = g[i][r];
-      if (!c) out += '.';
+      if (!c) { if (tieHead(g, i, r) >= 0) { out += '-'; anyTie = true; } else out += '.'; }
       else if (c.ripe) { out += DIG[c.f]; anyRipe = true; }
       else out += c.ice ? LET[c.f].toUpperCase() : LET[c.f];
     }
-    return (anyRipe ? 'KG2:' : 'KG1:') + b + ':' + out;
+    return (anyTie ? 'KG3:' : anyRipe ? 'KG2:' : 'KG1:') + b + ':' + out;
   }
   function decodeSong(str){
-    const m = /^KG([12]):(\d{2,3}):([.a-zA-Z1-6]{80})$/.exec(String(str).replace(/\s+/g, ''));
+    const m = /^KG([123]):(\d{2,3}):([.a-zA-Z1-6-]{80})$/.exec(String(str).replace(/\s+/g, ''));
     if (!m) return null;
-    const v2 = m[1] === '2';
+    const v2 = m[1] !== '1', v3 = m[1] === '3';
+    const ties = [];
     const b = +m[2]; if (b < 60 || b > 180) return null;
     const g = emptyGrid();
     for (let i = 0; i < 80; i++) {
       const ch = m[3][i]; if (ch === '.') continue;
       const at = [Math.floor(i/ROWS), i%ROWS];
+      if (ch === '-') { if (!v3) return null; ties.push(at); continue; }
       if (ch >= '1' && ch <= '6') {
         if (!v2) return null;
         g[at[0]][at[1]] = {f:UNDIG[ch], ice:false, ripe:true};
@@ -902,6 +963,18 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
       }
       const f = UNLET[ch.toLowerCase()]; if (!f) return null;
       g[at[0]][at[1]] = {f, ice: ch !== ch.toLowerCase(), ripe:false};
+    }
+    for (const [i, r] of ties) {                       // 続きのマスは、すぐ左へたどって先頭にたどりつくこと(最大4マス)
+      let k = 1;
+      while (k < MAXLEN && i - k >= 0 && !g[i - k][r] && ties.some(t => t[0] === i - k && t[1] === r)) k++;
+      const h = i - k >= 0 ? g[i - k][r] : null;
+      if (!h) return null;
+      h.len = Math.max(lenOf(h), k + 1);
+      if (h.len > MAXLEN) return null;
+    }
+    for (let r = 0; r < ROWS; r++) for (let i = 0; i < STEPS; i++) {   // 続きの数と先頭の長さが食い違うコードははじく
+      const c = g[i][r];
+      if (c && lenOf(c) > 1) for (let k = 1; k < lenOf(c); k++) if (g[i + k] === undefined || g[i + k][r] || !ties.some(t => t[0] === i + k && t[1] === r)) return null;
     }
     return {g, b};
   }
@@ -984,7 +1057,7 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
   });
   $('loadcode').addEventListener('click', () => {
     const d = decodeSong(codeIn.value);
-    if (!d) { codeMsgEl.textContent = '曲コードの形が違うようです。KG1: か KG2: で始まるコードを貼ってください。'; return; }
+    if (!d) { codeMsgEl.textContent = '曲コードの形が違うようです。KG1〜KG3 で始まるコードを貼ってください。'; return; }
     applySong(d); codeIn.value = '';
     codeMsgEl.textContent = '読み込みました。「元に戻す」で前の棚に戻せます。';
   });
@@ -1555,7 +1628,7 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
     } else {
       for (let s = 0; s < STEPS; s++) for (let r = 0; r < ROWS; r++) {
         if (!g[s][r]) continue;
-        if (grid[s][r]) skipped++; else { grid[s][r] = {f:g[s][r].f, ice:g[s][r].ice, ripe:!!g[s][r].ripe}; added++; }
+        if (grid[s][r] || tieHead(grid, s, r) >= 0) skipped++; else { grid[s][r] = {f:g[s][r].f, ice:g[s][r].ice, ripe:!!g[s][r].ripe}; added++; }
       }
     }
     setMode('shelf');
@@ -1849,6 +1922,8 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
     playBtn.hidden = b; tbtnsEl.hidden = b; transportEl.classList.toggle('tempo-only', b); transportEl.hidden = d;
     shelvesEl.hidden = b; songsEl.hidden = b; arenaEl.hidden = !b;
     $('trayset').hidden = d; $('mixer').hidden = d; $('dbar').hidden = !d;
+    trayEl.querySelector('.t-tie').hidden = b; trayEl.style.setProperty('--tn', b ? 9 : 10);   // 「つなぐ」は棚だけ
+    if (b && tool === 'tie') setTool(lastFruit);
     $('playctl').hidden = d; $('dacts').hidden = !d; $('rigs').hidden = !d;
     stage.classList.toggle('designing', d);
     stage.setAttribute('aria-label', d ? '板とペグを置く設計の画面。ドラッグで板、タップでペグを置けます。' : '果物が落ちて転がる遊び場。タップした場所から果物が落ちます。');
@@ -1870,6 +1945,4 @@ textarea.code{width:100%; min-height:76px; resize:vertical; font:12px/1.45 ui-mo
 })();
 </script>
 
-
-</body>
-</html>
+</body></html>
